@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Enhanced Dashboard Header -->
+    <header class="dashboard-header px-4 py-3 mb-4 bg-white shadow-sm sticky-top">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 fw-bold mb-1 text-gradient-primary">Agricultural Intelligence Dashboard</h1>
+                <p class="text-muted mb-0"><i class="bi bi-speedometer2 me-2"></i>Real-time Agricultural Analytics</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="theme-toggle">
+                    <button class="btn btn-light btn-sm" id="themeToggle">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+                </div>
+                <button class="btn btn-primary btn-hover-gradient" data-bs-toggle="modal" data-bs-target="#exportModal">
+                    <i class="bi bi-cloud-arrow-down me-2"></i>Export Insights
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="row g-4 mx-0 px-3">
+        <!-- Primary Visualization Section -->
+        <div class="col-12 col-xxl-8">
+            <div class="row g-4">
+                <!-- Interactive Chart Cards -->
+                <div class="col-12 col-lg-6">
+                    <div class="card interactive-card shadow-lg-hover">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-wrapper bg-primary-soft">
+                                    <i class="bi bi-bar-chart-line"></i>
+                                </div>
+                                <h5 class="mb-0">Crop Distribution</h5>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">View Details</a></li>
+                                    <li><a class="dropdown-item" href="#">Compare Data</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container chart-h-300" data-loading="true">
+                                {{ histogram_graph | safe }}
+                                <div class="chart-loading-overlay">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Heatmap Card -->
+                <div class="col-12 col-lg-6">
+                    <div class="card interactive-card shadow-lg-hover">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-wrapper bg-warning-soft">
+                                    <i class="bi bi-grid-3x3-gap"></i>
+                                </div>
+                                <h5 class="mb-0">Regional Heatmap</h5>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Filter Regions</a></li>
+                                    <li><a class="dropdown-item" href="#">Export Data</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container chart-h-300">
+                                {{ heatmap_graph | safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time Series Section -->
+                <div class="col-12">
+                    <div class="card shadow-lg-hover">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-wrapper bg-success-soft">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                </div>
+                                <h5 class="mb-0">Production Trends</h5>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary active">10D</button>
+                                <button type="button" class="btn btn-outline-secondary">30D</button>
+                                <button type="button" class="btn btn-outline-secondary">1Y</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="chart-card">
+                                        <h6 class="chart-subtitle">Daily Production</h6>
+                                        <div class="chart-container chart-h-250">
+                                            {{ ha_bar_chart | safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="chart-card">
+                                        <h6 class="chart-subtitle">Cumulative Trends</h6>
+                                        <div class="chart-container chart-h-250">
+                                            {{ ha_line_chart | safe }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Metrics & Analytics -->
+        <div class="col-12 col-xxl-4">
+            <div class="row g-4">
+                <!-- Productivity Metrics -->
+                <div class="col-12">
+                    <div class="card shadow-lg-hover">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-wrapper bg-info-soft">
+                                    <i class="bi bi-clock-history"></i>
+                                </div>
+                                <h5 class="mb-0">Efficiency Analytics</h5>
+                            </div>
+                            <i class="bi bi-info-circle" data-bs-toggle="tooltip"
+                               title="Measures operational efficiency over time"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container chart-h-300">
+                                {{ total_ac_over_time_graph | safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Performance -->
+                <div class="col-12">
+                    <div class="card shadow-lg-hover">
+                        <div class="card-header d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-wrapper bg-danger-soft">
+                                    <i class="bi bi-person-workspace"></i>
+                                </div>
+                                <h5 class="mb-0">Team Performance</h5>
+                            </div>
+                            <div class="badge bg-primary">Updated 1h ago</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container chart-h-300">
+                                {{ user_days_work_bar | safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Tables Section -->
+    <section class="row g-4 mt-2 mx-0 px-3">
+        <div class="col-12">
+            <div class="card shadow-lg-hover">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-table me-2"></i>Performance Metrics</h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse"
+                                data-bs-target="#tableFilters">Filters</button>
+                        <button class="btn btn-sm btn-outline-secondary" id="refreshTables">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="collapse" id="tableFilters">
+                        <div class="row g-3 my-3">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Search...">
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select">
+                                    <option>All Categories</option>
+                                    <option>Vegetables</option>
+                                    <option>Grains</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <!-- Enhanced Tables -->
+                        <div class="col-12 col-lg-6">
+                            <div class="table-card">
+                                <h6 class="table-title">Top Varieties</h6>
+                                <div class="table-responsive">
+                                    {{ top_10_varieties_list | safe }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6">
+                            <div class="table-card">
+                                <h6 class="table-title">Performance Leaders</h6>
+                                <div class="table-responsive">
+                                    {{ best_user_creation_ha_ac_list | safe }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Tables -->
+                        <div class="col-12">
+                            <div class="table-card">
+                                <h6 class="table-title">Enterprise Analytics</h6>
+                                <div class="table-responsive">
+                                    {{ best_10_user_creation_companies_list | safe }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Table: Officer Total Surface Area -->
+                        <div class="col-12">
+                            <div class="table-card">
+                                <h6 class="table-title">Officer Total Surface Area (ha &amp; acres)</h6>
+                                <div class="table-responsive">
+                                    {{ officer_surface_table | safe }}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Enhanced Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-semibold">Export Insights</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('main.download_pdf') }}" method="POST">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Date Range</label>
+                            <input type="text" class="form-control date-range-picker" name="date_range">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Format</label>
+                            <select class="form-select" name="export_format">
+                                <option value="pdf">PDF Report</option>
+                                <option value="csv">CSV Data</option>
+                                <option value="excel">Excel Spreadsheet</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="includeCharts">
+                                <label class="form-check-label" for="includeCharts">
+                                    Include Visualizations
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-hover-gradient">
+                            <i class="bi bi-download me-2"></i>Generate Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --card-radius: 1rem;
+        --transition-speed: 0.3s;
+    }
+
+    .dashboard-header {
+        backdrop-filter: blur(10px);
+        background-color: rgba(255,255,255,0.8);
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .interactive-card {
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: var(--card-radius);
+        transition: transform var(--transition-speed) ease;
+    }
+
+    .interactive-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .icon-wrapper {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        margin-right: 1rem;
+    }
+
+    .chart-container {
+        position: relative;
+        border-radius: calc(var(--card-radius) - 0.5rem);
+        background: rgba(245, 247, 252, 0.5);
+    }
+
+    .chart-loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255,255,255,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: inherit;
+    }
+
+    .table-card {
+        background: rgba(245, 247, 252, 0.5);
+        border-radius: var(--card-radius);
+        padding: 1.25rem;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .table-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 1rem;
+    }
+
+    [data-theme="dark"] {
+        background-color: #1a202c;
+        color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .card {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.setAttribute('data-theme',
+                document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            themeToggle.querySelector('i').classList.toggle('bi-moon-stars');
+            themeToggle.querySelector('i').classList.toggle('bi-sun');
+        });
+
+        // Enhanced Date Picker
+        $('.date-range-picker').daterangepicker({
+            opens: 'left',
+            autoApply: true,
+            locale: {
+                format: 'MMM D, YYYY',
+                separator: ' - ',
+                applyLabel: 'Apply',
+                cancelLabel: 'Cancel',
+            },
+            ranges: {
+                'Today': [moment(), moment()],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+            },
+            showDropdowns: true,
+            alwaysShowCalendars: true
+        });
+
+        // Initialize Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(tooltip => new bootstrap.Tooltip(tooltip));
+
+        // Refresh Tables
+        document.getElementById('refreshTables').addEventListener('click', function() {
+            // Logic to refresh table data
+            alert('Tables refreshed!');
+        });
+    });
+</script>
+{% endblock %}

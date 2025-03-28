@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="row">
+    <!-- Payment Section -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="card-title mb-0">Make a Payment</h4>
+        </div>
+        <div class="card-body">
+          {% if farmer and total_payment is not none %}
+          <div class="mb-4">
+            <h5 class="mb-3">Payment Details</h5>
+            <ul class="list-unstyled">
+              <li><strong>Farmer Name:</strong> {{ farmer.full_name }}</li>
+              <li><strong>Farmer ID:</strong> {{ farmer.unique_number }}</li>
+              <li><strong>Phone Number:</strong> {{ farmer.phone_number }}</li>
+              <li>
+                <strong>Clean Harvest (Kg):</strong>
+                {{ total_clean if total_clean is not none else 'N/A' }}
+              </li>
+              <li>
+                <strong>Husk Harvest (Kg):</strong>
+                {{ total_husk if total_husk is not none else 'N/A' }}
+              </li>
+              <li>
+                <strong>Total Payment:</strong> Ksh
+                {% if total_payment is not none %}
+                  {{ total_payment | round(2) }}
+                {% else %}
+                  N/A
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+          {% endif %}
+
+          <form method="POST" action="{{ url_for('main.payment', farmer_id=farmer_id, total_clean=total_clean, total_husk=total_husk, total_payment=total_payment) }}">
+            <div class="mb-3">
+              <label for="farmer_id" class="form-label">Farmer ID</label>
+              <input type="text" class="form-control" id="farmer_id" name="farmer_id" required value="{{ farmer_id }}" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="payment_method" class="form-label">Payment Method</label>
+              <select class="form-select" id="payment_method" name="payment_method" required>
+                <option value="Cash">Cash</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Mobile Money">Mobile Money</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit Payment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Receipt Section -->
+    <div class="col-lg-6 mb-4">
+      {% if receipt %}
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h4 class="card-title mb-0">Payment Receipt</h4>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Receipt Number:</strong> {{ receipt.receipt_number }}</li>
+            <li class="list-group-item"><strong>Date:</strong> {{ receipt.date }}</li>
+            <li class="list-group-item"><strong>Farmer Name:</strong> {{ receipt.farmer.full_name }}</li>
+            <li class="list-group-item"><strong>Farmer ID:</strong> {{ receipt.farmer.unique_number }}</li>
+            <li class="list-group-item"><strong>Phone Number:</strong> {{ receipt.farmer.phone_number }}</li>
+            <li class="list-group-item">
+              <strong>Clean Harvest (Kg):</strong>
+              {{ receipt.total_clean if receipt.total_clean is not none else 'N/A' }}
+            </li>
+            <li class="list-group-item">
+              <strong>Husk Harvest (Kg):</strong>
+              {{ receipt.total_husk if receipt.total_husk is not none else 'N/A' }}
+            </li>
+            <li class="list-group-item">
+              <strong>Total Payment:</strong> Ksh
+              {% if receipt.total_payment is not none %}
+                {{ receipt.total_payment | round(2) }}
+              {% else %}
+                N/A
+              {% endif %}
+            </li>
+            <li class="list-group-item"><strong>Payment Method:</strong> {{ receipt.payment_method }}</li>
+          </ul>
+        </div>
+      </div>
+      {% else %}
+      <div class="alert alert-warning">
+        <p>No receipt available.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

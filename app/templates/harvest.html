@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h2 class="mt-4">Record Harvest</h2>
+  <form method="POST" action="{{ url_for('main.record_harvest') }}">
+    <div class="mb-3">
+      <label for="farmer_id" class="form-label">Farmer ID</label>
+      <input type="text" class="form-control" id="farmer_id" name="farmer_id" required>
+    </div>
+    <div class="mb-3">
+      <label for="crop_type" class="form-label">Crop Type</label>
+      <select class="form-control" id="crop_type" name="crop_type" required>
+        <option value="Castor">Castor</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="variety" class="form-label">Variety</label>
+      <select class="form-control" id="variety" name="variety" required>
+        <option value="Tamar">Tamar</option>
+        <option value="Kariel">Kariel</option>
+        <option value="GCH2">GCH2</option>
+        <option value="GCH9">GCH9</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="kgs_harvested_clean" class="form-label">Kgs Harvested (Clean)</label>
+      <input type="number" step="0.01" class="form-control" id="kgs_harvested_clean" name="kgs_harvested_clean" required>
+      <small class="form-text text-muted">Price: Ksh 52 per kg</small>
+    </div>
+    <div class="mb-3">
+      <label for="kgs_harvested_husk" class="form-label">Kgs Harvested (Husk)</label>
+      <input type="number" step="0.01" class="form-control" id="kgs_harvested_husk" name="kgs_harvested_husk" required>
+      <small class="form-text text-muted">Price: Ksh 26 per kg</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Record Harvest & Proceed to Payment</button>
+  </form>
+</div>
+{% endblock %}

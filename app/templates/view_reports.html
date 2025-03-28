@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <aside class="col-lg-3 col-xl-2 d-none d-lg-block">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title text-secondary fw-semibold">
+            <i class="bi bi-clipboard-data me-2"></i>Reporting
+          </h5>
+          <nav class="nav flex-column">
+            <a class="nav-link d-flex align-items-center {% if active_sidebar == 'view_reports' %}active{% endif %}" href="{{ url_for('main.view_reports') }}">
+              <i class="bi bi-file-earmark-text fs-5 me-3"></i>
+              View Reports
+            </a>
+          </nav>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="col-lg-9 col-xl-10">
+      <div class="container-fluid px-4">
+        <h1 class="h3 fw-bold mb-4">View Daily Reports</h1>
+
+        <!-- Reports Table -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table id="reportsTable" class="table table-bordered table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Date</th>
+                    <th>Officer Name</th>
+                    <th>Farmers Registered</th>
+                    <th>Total Acres</th>
+                    <th>Tractors in Area</th>
+                    <th>Acres Ploughed</th>
+                    <th>Staff in Attendance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for report in reports %}
+                  <tr>
+                    <td>{{ report.report_date }}</td>
+                    <td>{{ report.officer_name }}</td>
+                    <td>{{ report.farmers_registered }}</td>
+                    <td>{{ report.total_acres }}</td>
+                    <td>{{ report.tractors_in_area }}</td>
+                    <td>{{ report.acres_ploughed }}</td>
+                    <td>{{ report.staff_attendance }}</td>
+                  <!-- Dropdown for Actions -->
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton{{ loop.index }}" data-bs-toggle="dropdown" aria-expanded="false">
+                    Actions
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ loop.index }}">
+                    <li><a class="dropdown-item" href="#">View Details</a></li>
+                    <li><a class="dropdown-item" href="#">Edit Report</a></li>
+                    <li><a class="dropdown-item text-danger" href="#">Delete Report</a></li>
+                  </ul>
+                </div>
+              </td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td colspan="7" class="text-center">No reports available.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Table -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-body">
+            <h4 class="fw-bold">Performance Per Officer</h4>
+            <div class="table-responsive">
+              <table id="performanceTable" class="table table-bordered table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Officer Name</th>
+                    <th>Total Farmers Registered</th>
+                    <th>Total Acres Ploughed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for officer in performance_data %}
+                  <tr>
+                    <td>{{ officer.officer_name }}</td>
+                    <td>{{ officer.total_farmers }}</td>
+                    <td>{{ officer.total_acres }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trends Per Officer Table -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-body">
+            <h4 class="fw-bold">Trends Per Officer</h4>
+            <div class="table-responsive">
+              <table id="trendsTable" class="table table-bordered table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Officer Name</th>
+                    <th>Monthly Farmers Registered</th>
+                    <th>Monthly Acres Ploughed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for trend in trends_data %}
+                  <tr>
+                    <td>{{ trend.officer_name }}</td>
+                    <td>{{ trend.monthly_farmers }}</td>
+                    <td>{{ trend.monthly_acres }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Staff Overview Table -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-body">
+            <h4 class="fw-bold">Staff Attendance Records</h4>
+            <div class="table-responsive">
+              <table id="staffTable" class="table table-bordered table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Staff Name</th>
+                    <th>Total Attendance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for staff in staff_data %}
+                  <tr>
+                    <td>{{ staff.staff_name }}</td>
+                    <td>{{ staff.attendance_records }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Include DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+<script>
+  // Initialize DataTables for all tables
+  $(document).ready(function () {
+    $('#reportsTable, #performanceTable, #trendsTable, #staffTable').DataTable({
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'csv',
+          text: 'Export CSV',
+          className: 'btn btn-success'
+        }
+      ]
+    });
+
+    // Connect export button to DataTables export (for main reports table)
+    $('#exportCSV').click(() => {
+      $('#reportsTable').DataTable().button('.buttons-csv').trigger();
+    });
+  });
+</script>
+{% endblock %}

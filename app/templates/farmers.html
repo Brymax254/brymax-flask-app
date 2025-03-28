@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  {% if receipt %}
+  <!-- Payment Receipt Card -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white">
+      <h4 class="card-title mb-0">Payment Receipt</h4>
+    </div>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><strong>Receipt Number:</strong> {{ receipt.receipt_number }}</li>
+        <li class="list-group-item"><strong>Date:</strong> {{ receipt.date }}</li>
+        <li class="list-group-item"><strong>Farmer Name:</strong> {{ receipt.farmer.full_name }}</li>
+        <li class="list-group-item"><strong>Farmer ID:</strong> {{ receipt.farmer.unique_number }}</li>
+        <li class="list-group-item"><strong>Phone Number:</strong> {{ receipt.farmer.phone_number }}</li>
+        <li class="list-group-item">
+          <strong>Clean Harvest (Kg):</strong> {{ receipt.total_clean if receipt.total_clean is not none else 'N/A' }}
+        </li>
+        <li class="list-group-item">
+          <strong>Husk Harvest (Kg):</strong> {{ receipt.total_husk if receipt.total_husk is not none else 'N/A' }}
+        </li>
+        <li class="list-group-item">
+          <strong>Total Payment:</strong> Ksh {% if receipt.total_payment is not none %}{{ receipt.total_payment | round(2) }}{% else %}N/A{% endif %}
+        </li>
+        <li class="list-group-item"><strong>Payment Method:</strong> {{ receipt.payment_method }}</li>
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  <h2 class="mb-4">Registered Farmers</h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>Farmer ID</th>
+          <th>Name</th>
+          <th>County</th>
+          <th>Subcounty</th>
+          <th>Ward</th>
+          <th>Location</th>
+          <th>Phone Number</th>
+          <th>Village</th>
+          <th>Land Size (acres)</th>
+          <th>Season</th>
+          <th>Fertilizer Type</th>
+          <th>Kgs Issued</th>
+          <th>Kgs Harvested (Clean)</th>
+          <th>Kgs Harvested (Husk)</th>
+          <th>Amount Received</th>
+          <th>Last Harvest Date</th>
+          <th>Last Payment Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for farmer in farmers %}
+        <tr>
+          <td>{{ farmer.unique_number }}</td>
+          <td>{{ farmer.full_name }}</td>
+          <td>{{ farmer.county }}</td>
+          <td>{{ farmer.subcounty }}</td>
+          <td>{{ farmer.ward }}</td>
+          <td>{{ farmer.location }}</td>
+          <td>{{ farmer.phone_number }}</td>
+          <td>{{ farmer.village }}</td>
+          <td>{{ farmer.land_size }}</td>
+          <td>{{ farmer.season }}</td>
+          <td>{{ farmer.fertilizer_type or 'N/A' }}</td>
+          <td>{{ farmer.kgs_issued or 'N/A' }}</td>
+          <td>{{ farmer.kgs_harvested_clean or 'N/A' }}</td>
+          <td>{{ farmer.kgs_harvested_husk or 'N/A' }}</td>
+          <td>{{ farmer.amount_received or 'N/A' }}</td>
+          <td>
+            {% if farmer.last_harvest_date %}
+              {{ farmer.last_harvest_date.strftime("%Y-%m-%d") }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if farmer.last_payment_date %}
+              {{ farmer.last_payment_date.strftime("%Y-%m-%d") }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

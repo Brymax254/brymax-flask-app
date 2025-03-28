@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mt-4">Issue Fertilizer</h2>
+    <form method="POST" action="{{ url_for('main.issue_fertilizer') }}">
+        <div class="mb-3">
+            <label for="farmer_id" class="form-label">Farmer ID</label>
+            <input type="text" class="form-control" id="farmer_id" name="farmer_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="fertilizer_type" class="form-label">Fertilizer Type</label>
+            <select class="form-control" id="fertilizer_type" name="fertilizer_type" required>
+                <option value="Organic">Organic</option>
+                <option value="Synthetic DAP">Synthetic DAP</option>
+                <option value="Amidas">Amidas</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="kgs_issued" class="form-label">Kgs Issued</label>
+            <input type="number" class="form-control" id="kgs_issued" name="kgs_issued" required>
+        </div>
+        <div class="mb-3">
+            <label for="amount_received" class="form-label">Amount Received</label>
+            <input type="number" class="form-control" id="amount_received" name="amount_received" required>
+        </div>
+        <div class="mb-3">
+            <label for="issue_date" class="form-label">Date of Issuance</label>
+            <input type="date" class="form-control" id="issue_date" name="issue_date" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Issue Fertilizer</button>
+    </form>
+</div>
+{% endblock %}

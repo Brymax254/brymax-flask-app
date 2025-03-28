@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mt-4">Issue Seeds</h2>
+    <form method="POST" action="{{ url_for('main.issue_seeds') }}">
+        <div class="mb-3">
+            <label for="farmer_id" class="form-label">Farmer ID</label>
+            <input type="text" class="form-control" id="farmer_id" name="farmer_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="seed_type" class="form-label">Seed Type</label>
+            <select class="form-control" id="seed_type" name="seed_type" required>
+                <option value="GCH9">GCH9</option>
+                <option value="GCH2">GCH2</option>
+                <option value="Tamar">Tamar</option>
+                <option value="Kariel">Kariel</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity (Kg)</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Issue Seeds</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Profile Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="h2 fw-bold mb-1">{{ employee.name }}</h1>
+            <div class="d-flex gap-2 text-muted">
+                <span><i class="bi bi-person-badge me-1"></i>{{ employee.position }}</span>
+                <span><i class="bi bi-building me-1"></i>{{ employee.department }}</span>
+            </div>
+        </div>
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#"><i class="bi bi-download me-2"></i>Export Profile</a></li>
+                <li><a class="dropdown-item" href="#"><i class="bi bi-lock me-2"></i>Security Settings</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="avatar-upload mb-4">
+                        <div class="avatar-preview">
+                            <img src="{{ url_for('static', filename='images/avatar-placeholder.png') }}"
+                                 class="rounded-circle w-50"
+                                 alt="Profile picture">
+                        </div>
+                        <button class="btn btn-sm btn-primary mt-3">
+                            <i class="bi bi-camera me-2"></i>Update Photo
+                        </button>
+                    </div>
+
+                    <div class="text-start">
+                        <h5 class="fw-semibold mb-3">Quick Info</h5>
+                        <dl class="row small">
+                            <dt class="col-5 text-muted">Employee ID</dt>
+                            <dd class="col-7">#{{ employee.id }}</dd>
+
+                            <dt class="col-5 text-muted">Join Date</dt>
+                            <dd class="col-7">{{ employee.join_date }}</dd>
+
+                            <dt class="col-5 text-muted">Status</dt>
+                            <dd class="col-7">
+                                <span class="badge bg-success">Active</span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <!-- Personal Information Section -->
+                        <div class="mb-5">
+                            <h5 class="fw-semibold mb-4"><i class="bi bi-person-lines-fill me-2"></i>Personal Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.phone(class="form-control", placeholder="Phone Number") }}
+                                        {{ form.phone.label }}
+                                        {% for error in form.phone.errors %}
+                                            <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.address(class="form-control", placeholder="Address") }}
+                                        {{ form.address.label }}
+                                        {% for error in form.address.errors %}
+                                            <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Contact Section -->
+                        <div class="mb-5">
+                            <h5 class="fw-semibold mb-4"><i class="bi bi-heart-pulse-fill me-2"></i>Emergency Contact</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.emergency_contact(class="form-control", placeholder="Emergency Contact") }}
+                                        {{ form.emergency_contact.label }}
+                                        {% for error in form.emergency_contact.errors %}
+                                            <div class="invalid-feedback d-block">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="emergency_phone"
+                                               placeholder="Emergency Phone" required>
+                                        <label for="emergency_phone">Emergency Phone</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                            <a href="#" class="text-danger"><i class="bi bi-lock me-2"></i>Change Password</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-2"></i>Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-upload {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .avatar-preview {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+        border: 3px solid var(--bs-border-color);
+        border-radius: 50%;
+    }
+
+    .form-floating {
+        position: relative;
+    }
+
+    .form-floating label {
+        padding-left: 2.5rem;
+    }
+
+    .form-floating .bi {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 4;
+        color: var(--bs-secondary);
+    }
+</style>
+
+<script>
+    // Add icons to form inputs
+    document.querySelectorAll('.form-floating').forEach((div) => {
+        const input = div.querySelector('input, select, textarea');
+        const iconMap = {
+            'phone': 'telephone-fill',
+            'address': 'geo-alt-fill',
+            'emergency_contact': 'person-badge-fill'
+        };
+
+        if(input.id in iconMap) {
+            const icon = document.createElement('i');
+            icon.className = `bi bi-${iconMap[input.id]}`;
+            div.prepend(icon);
+        }
+    });
+</script>
+{% endblock %}

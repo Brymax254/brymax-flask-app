@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Search for a Farmer</h2>
+  <form method="GET" action="{{ url_for('main.fetch_farmer_default') }}">
+    <div class="mb-3">
+      <label for="farmer_id" class="form-label">Farmer ID</label>
+      <input type="text" class="form-control" id="farmer_id" name="farmer_id" placeholder="Enter Farmer ID">
+    </div>
+    <div class="mb-3">
+      <label for="phone_number" class="form-label">Phone Number</label>
+      <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="Enter Phone Number">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  <hr>
+
+  {% if farmer_search is defined %}
+    <h3 class="mt-4">Search Result</h3>
+    {% if farmer_search %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{{ farmer_search.full_name }} ({{ farmer_search.unique_number }})</h5>
+          <p><strong>County:</strong> {{ farmer_search.county }}</p>
+          <p><strong>Subcounty:</strong> {{ farmer_search.subcounty }}</p>
+          <p><strong>Ward:</strong> {{ farmer_search.ward }}</p>
+          <p><strong>Location:</strong> {{ farmer_search.location }}</p>
+          <p><strong>Phone Number:</strong> {{ farmer_search.phone_number }}</p>
+          <p><strong>Village:</strong> {{ farmer_search.village }}</p>
+          <p><strong>Land Size (acres):</strong> {{ farmer_search.land_size }}</p>
+          <p><strong>Season:</strong> {{ farmer_search.season }}</p>
+        </div>
+      </div>
+      <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    {% else %}
+      <p class="text-danger">No farmer found with the provided criteria.</p>
+    {% endif %}
+  {% else %}
+    <h3 class="mt-4">All Registered Farmers</h3>
+    {% if farmers %}
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead class="table-dark">
+            <tr>
+              <th>Farmer ID</th>
+              <th>Name</th>
+              <th>County</th>
+              <th>Subcounty</th>
+              <th>Ward</th>
+              <th>Location</th>
+              <th>Phone Number</th>
+              <th>Village</th>
+              <th>Land Size (acres)</th>
+              <th>Season</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for farmer in farmers %}
+            <tr>
+              <td>{{ farmer.unique_number }}</td>
+              <td>{{ farmer.full_name }}</td>
+              <td>{{ farmer.county }}</td>
+              <td>{{ farmer.subcounty }}</td>
+              <td>{{ farmer.ward }}</td>
+              <td>{{ farmer.location }}</td>
+              <td>{{ farmer.phone_number }}</td>
+              <td>{{ farmer.village }}</td>
+              <td>{{ farmer.land_size }}</td>
+              <td>{{ farmer.season }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>No farmers registered.</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

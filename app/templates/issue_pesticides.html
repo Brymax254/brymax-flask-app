@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mt-4">Issue Pesticides</h2>
+    <form method="POST" action="{{ url_for('main.issue_pesticides') }}">
+        <div class="mb-3">
+            <label for="farmer_id" class="form-label">Farmer ID</label>
+            <input type="text" class="form-control" id="farmer_id" name="farmer_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="pesticide_type" class="form-label">Pesticide Type</label>
+            <input type="text" class="form-control" id="pesticide_type" name="pesticide_type" required>
+        </div>
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity (ml)</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Issue Pesticides</button>
+    </form>
+</div>
+{% endblock %}

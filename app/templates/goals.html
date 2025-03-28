@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Goals - {{ employee.name }}</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.description.label }} {{ form.description(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary">Add Goal</button>
+</form>
+<h2>Current Goals</h2>
+<ul>
+    {% for goal in goals %}
+    <li>{{ goal.description }} (Progress: {{ goal.progress }}%)</li>
+    {% endfor %}
+</ul>
+{% endblock %}

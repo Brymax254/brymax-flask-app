@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0); min-height: 100vh;">
+  <div class="row">
+
+    <!-- Sidebar Column -->
+    <div class="col-lg-3 col-xl-2">
+      <!-- Navigation Card -->
+      <div class="card shadow-sm mb-4 animate__animated animate__fadeInLeft">
+        <div class="card-body">
+          <h5 class="text-secondary mb-4 fw-semibold">
+            <i class="bi bi-people me-2"></i>Management
+          </h5>
+          <nav class="nav flex-column">
+            <a class="nav-link" href="{{ url_for('main.register_farmer') }}">Register Farmers</a>
+            <a class="nav-link" href="{{ url_for('main.fetch_farmer_default') }}">Fetch Data</a>
+            <a class="nav-link" href="{{ url_for('main.manage_users') }}">Manage Users</a>
+            <a class="nav-link" href="{{ url_for('main.add_user') }}">Add User</a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Additional Sidebar Cards -->
+      <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp">
+        <div class="card-body">
+          <h6 class="card-title text-primary">Total Farmers</h6>
+          <p class="card-text display-6 mb-0">125</p>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div class="card-body">
+          <h6 class="card-title text-warning">Total Payments</h6>
+          <p class="card-text display-6 mb-0">$32K</p>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+        <div class="card-body">
+          <h6 class="card-title text-success">Latest Update</h6>
+          <p class="card-text small mb-0">System updated today!</p>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
+        <div class="card-body">
+          <h6 class="card-title text-info">Announcements</h6>
+          <p class="card-text small mb-0">Adverts, memos & daily updates will appear here.</p>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <div class="d-grid">
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger mt-3">
+          <i class="bi bi-box-arrow-right me-1"></i>Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content Column -->
+    <div class="col-lg-9 col-xl-10">
+      <!-- Dashboard Header -->
+      <div class="row mb-4">
+        <div class="col-12 text-center">
+          <h1 class="fw-bold animate__animated animate__fadeInDown">Brymax 3D Dashboard</h1>
+          <p class="lead text-muted">Your centralized hub for data management, insights, and updates</p>
+        </div>
+      </div>
+
+      <!-- Main Card Grid -->
+      <div class="row g-4">
+        <!-- Visualize Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff; background: linear-gradient(45deg, #007bff, #0056b3); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-bar-chart-line"></i>
+              </div>
+              <h6 class="card-title">Visualize Data</h6>
+              <p class="card-text small text-muted">Generate analytical visuals.</p>
+              <a href="{{ url_for('main.visualize') }}" class="btn btn-sm btn-outline-primary w-100">View Visuals</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Register Farmers Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.1s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff; background: linear-gradient(45deg, #17a2b8, #117a8b); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-pencil-square"></i>
+              </div>
+              <h6 class="card-title">Register Farmers</h6>
+              <p class="card-text small text-muted">Add new farmer registrations.</p>
+              <a href="{{ url_for('main.register_farmer') }}" class="btn btn-sm btn-outline-info w-100">Register</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.2s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #ffc107, #e0a800);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-credit-card"></i>
+              </div>
+              <h6 class="card-title">Payment</h6>
+              <p class="card-text small text-muted">Process transactions.</p>
+              <a href="{{ url_for('main.payment') }}" class="btn btn-sm btn-outline-warning w-100">Go to Payment</a>
+            </div>
+          </div>
+        </div>
+<!-- Modern Daily Report Card -->
+<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.8s; border-radius: 15px; overflow: hidden;">
+    <div class="card-body text-center">
+      <!-- Icon with modern gradient and subtle shadow -->
+      <div class="icon mb-3" style="
+             font-size: 2.5rem;
+             color: #fff;
+             background: linear-gradient(45deg, #ff6f61, #ff8a65);
+             border-radius: 50%;
+             width: 60px;
+             height: 60px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+             ">
+        <i class="bi bi-file-earmark-text"></i>
+      </div>
+      <!-- Title and description -->
+      <h6 class="card-title fw-bold" style="font-size: 1.1rem; margin-bottom: 0.5rem;">Enter Daily Report</h6>
+      <p class="card-text small text-muted" style="margin-bottom: 1rem;">Track today’s performance metrics.</p>
+      <!-- Button with modern styling and hover effect -->
+      <a href="{{ url_for('main.daily_report') }}" class="btn btn-sm btn-outline-orange w-100 modern-btn">
+        View Report
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Additional style rules for the button hover effect -->
+<style>
+  /* Modern Button Hover Effect */
+  .modern-btn {
+    border-radius: 25px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .btn-outline-orange {
+    border-color: #fd7e14;
+    color: #fd7e14;
+  }
+  .btn-outline-orange:hover {
+    background-color: #fd7e14;
+    color: #fff;
+  }
+</style>
+
+        <!-- Payroll Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.3s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #28a745, #1e7e34);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-cash-stack"></i>
+              </div>
+              <h6 class="card-title">Payroll</h6>
+              <p class="card-text small text-muted">Manage payroll operations.</p>
+              <a href="{{ url_for('main.payroll') }}" class="btn btn-sm btn-outline-success w-100">View Payroll</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plough Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.4s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #6c757d, #545b62);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-wrench"></i>
+              </div>
+              <h6 class="card-title">Manage Plough</h6>
+              <p class="card-text small text-muted">Track plough operations.</p>
+              <a href="{{ url_for('main.plough_default') }}" class="btn btn-sm btn-outline-secondary w-100">Manage Plough</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.5s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #343a40, #23272b);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <h6 class="card-title">Profile</h6>
+              <p class="card-text small text-muted">View your profile.</p>
+              <a href="{{ url_for('main.profile') }}" class="btn btn-sm btn-outline-dark w-100">View Profile</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- View PDF Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.6s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #dc3545, #bd2130);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-file-earmark-pdf"></i>
+              </div>
+              <h6 class="card-title">View PDF</h6>
+              <p class="card-text small text-muted">Display PDF documents.</p>
+              <a href="{{ url_for('main.view_pdf') }}" class="btn btn-sm btn-outline-danger w-100">View PDF</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- View Reports Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.7s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #007bff, #0056b3);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+              </div>
+              <h6 class="card-title">View Reports</h6>
+              <p class="card-text small text-muted">Analyze detailed reports.</p>
+              <a href="{{ url_for('main.view_reports') }}" class="btn btn-sm btn-outline-primary w-100">View Reports</a>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Farmers Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.9s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #20c997, #198754);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-people"></i>
+              </div>
+              <h6 class="card-title">Farmers</h6>
+              <p class="card-text small text-muted">Manage registered farmers.</p>
+              <a href="{{ url_for('main.farmers') }}" class="btn btn-sm btn-outline-teal w-100">View Farmers</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google Sheets Visualize Card -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 1s;">
+            <div class="card-body text-center">
+              <div class="icon mb-3" style="font-size: 2.5rem; color: #fff;
+                     background: linear-gradient(45deg, #6f42c1, #5a32a3);
+                     border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-table"></i>
+              </div>
+              <h6 class="card-title">Google Sheets Visualize</h6>
+              <p class="card-text small text-muted">Display visuals from Google Sheets.</p>
+              <a href="{{ url_for('main.google_sheets_visualize') }}" class="btn btn-sm btn-outline-purple w-100">View Visuals</a>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- End Main Card Grid -->
+
+<!-- Uploaded Documents Section -->
+<div class="container mt-4">
+  <h2 class="mb-4">Uploaded Documents</h2>
+  <div class="row">
+    {% if files %}
+      {% for file in files %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+          <div class="card custom-card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 text-truncate" style="max-width: 70%;">{{ file }}</h6>
+              <!-- Download Button -->
+              <a href="{{ url_for('main.uploaded_file', filename=file) }}" download class="btn btn-sm btn-light">
+                <i class="bi bi-download"></i>
+              </a>
+            </div>
+            <!-- Fixed card-body height ensures equal sizing -->
+            <div class="card-body p-0" style="height: 300px;">
+              {% if file.lower().endswith('.pdf') %}
+                <!-- For PDFs, embed an iframe that fills the card body -->
+                <iframe src="{{ url_for('main.uploaded_file', filename=file) }}#toolbar=0&navpanes=0&statusbar=0&page=1"
+                        style="width: 100%; height: 100%; border: none;">
+                </iframe>
+              {% elif file.lower().endswith('.png') or file.lower().endswith('.jpg') or file.lower().endswith('.jpeg') %}
+                <!-- For images, use an img tag that fits the container -->
+                <img src="{{ url_for('main.uploaded_file', filename=file) }}"
+                     style="width: 100%; height: 100%; object-fit: cover; display: block;">
+              {% else %}
+                <!-- For other file types, provide a centered link -->
+                <div class="h-100 d-flex align-items-center justify-content-center">
+                  <a href="{{ url_for('main.uploaded_file', filename=file) }}" class="btn btn-primary" target="_blank">
+                    View Document
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted">No documents found.</p>
+    {% endif %}
+  </div>
+</div>
+
+      <!-- Admin Updates & Advertisements Section -->
+<div class="col-12 col-lg-6">
+  <div class="card shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+    <div class="card-header bg-gradient-secondary text-white">
+      <h5 class="mb-0">Admin Updates & Advertisements</h5>
+    </div>
+    <div class="card-body">
+      <!-- Display Current Updates -->
+      <div class="mb-3">
+        <p class="small text-muted mb-1">Latest Update:</p>
+        <p class="mb-0">Welcome to the new dashboard! Check out the updated reports and visualizations today!</p>
+      </div>
+      <div class="mb-3">
+        <p class="small text-muted mb-1">Memo:</p>
+        <p class="mb-0">Remember to submit your weekly performance review by Friday.</p>
+      </div>
+      <div class="mb-3">
+        <p class="small text-muted mb-1">Advertisement:</p>
+        <p class="mb-0">Special promotion on premium data insights – subscribe now!</p>
+      </div>
+
+      <!-- File Upload Form for Admin Data Upload -->
+<form action="{{ url_for('main.upload_data') }}" method="POST" enctype="multipart/form-data">
+  {% if form is defined %}
+    {{ form.hidden_tag() }}
+  {% endif %}
+  <div class="mb-3">
+    <label for="files" class="form-label">Upload Data Files</label>
+    <input class="form-control" type="file" id="files" name="files" multiple accept=".pdf, image/png, image/jpeg, .xls, .xlsx">
+    <div class="form-text">Allowed file types: PDF, PNG, JPEG, Excel</div>
+  </div>
+  <button type="submit" class="btn btn-sm btn-outline-success">Upload Files</button>
+</form>
+
+
+      <!-- Link to Post a New Update -->
+      <a href="{{ url_for('main.post_update') }}" class="btn btn-sm btn-outline-primary mt-3">Post New Update</a>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

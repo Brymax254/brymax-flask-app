@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Register</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <label>Username:</label> {{ form.username }}
+    <label>Password:</label> {{ form.password }}
+    <label>Confirm Password:</label> {{ form.confirm_password }}
+    <button type="submit">Register</button>
+  </form>
+{% endblock %}

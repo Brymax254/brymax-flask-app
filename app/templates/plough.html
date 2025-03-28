@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mt-4">Ploughing Request</h2>
+    <form method="POST" action="/plough">
+        <div class="mb-3">
+            <label for="farmer_id" class="form-label">Farmer ID</label>
+            <input type="text" class="form-control" id="farmer_id" name="farmer_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="land_size" class="form-label">Land Size (Acres)</label>
+            <input type="number" class="form-control" id="land_size" name="land_size" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Request Ploughing</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">BRYMAX 3D Data Management - Google Sheets Visualization</h1>
+
+    <!-- Line Graph: Entries Over Time -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title">Number of Entries Over Time (Daily)</h3>
+        </div>
+        <div class="card-body">
+            {{ line_graph_entries | safe }}
+        </div>
+    </div>
+
+    <!-- Heatmap: Density of Entries Over Time by Constituency -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title">Density of Entries Over Time by Constituency</h3>
+        </div>
+        <div class="card-body">
+            {{ heatmap_graph_density | safe }}
+        </div>
+    </div>
+
+    <!-- Scatter Plot: ACRES Over Time -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="card-title">Scatter Plot: ACRES Over Time</h3>
+        </div>
+        <div class="card-body">
+            {{ scatter_plot_acres | safe }}
+        </div>
+    </div>
+
+    <!-- Bar Chart: Count of Entries by Name -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="card-title">Count of Entries by Name</h3>
+        </div>
+        <div class="card-body">
+            {{ bar_chart_name | safe }}
+        </div>
+    </div>
+
+    <!-- Pie Chart: Proportion of Entries by Name -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h3 class="card-title">Proportion of Entries by Name</h3>
+        </div>
+        <div class="card-body">
+            {{ pie_chart_name | safe }}
+        </div>
+    </div>
+
+    <!-- Bar Chart: Count of Entries by Constituency -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="card-title">Count of Entries by Constituency</h3>
+        </div>
+        <div class="card-body">
+            {{ bar_chart_constituency | safe }}
+        </div>
+    </div>
+
+    <!-- Pie Chart: Proportion of Entries by Constituency -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h3 class="card-title">Proportion of Entries by Constituency</h3>
+        </div>
+        <div class="card-body">
+            {{ pie_chart_constituency | safe }}
+        </div>
+    </div>
+
+    <!-- Choropleth Map: Geographic Distribution -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="card-title">Geographic Distribution of Entries</h3>
+        </div>
+        <div class="card-body">
+            {{ choropleth_map | safe }}
+        </div>
+    </div>
+
+    <!-- Bar Chart: Count of Entries by Nearest Shopping Center -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title">Count of Entries by Nearest Shopping Center</h3>
+        </div>
+        <div class="card-body">
+            {{ bar_chart_shopping_center | safe }}
+        </div>
+    </div>
+
+    <!-- Pie Chart: Proportion of Entries by Nearest Shopping Center -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="card-title">Proportion of Entries by Nearest Shopping Center</h3>
+        </div>
+        <div class="card-body">
+            {{ pie_chart_shopping_center | safe }}
+        </div>
+    </div>
+
+    <!-- Histogram: Distribution of ACRES -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h3 class="card-title">Distribution of ACRES</h3>
+        </div>
+        <div class="card-body">
+            {{ histogram_acres | safe }}
+        </div>
+    </div>
+
+    <!-- Box Plot: ACRES Distribution Across Constituencies -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="card-title">Box Plot: ACRES Distribution Across Constituencies</h3>
+        </div>
+        <div class="card-body">
+            {{ box_plot_acres | safe }}
+        </div>
+    </div>
+
+    <!-- Scatter Plot: ACRES vs Constituency -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h3 class="card-title">Scatter Plot: ACRES vs Constituency</h3>
+        </div>
+        <div class="card-body">
+            {{ scatter_plot_acres_vs_constituency | safe }}
+        </div>
+    </div>
+
+    <!-- Bar Chart: Count of Entries by WARD -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="card-title">Count of Entries by WARD</h3>
+        </div>
+        <div class="card-body">
+            {{ bar_chart_ward | safe }}
+        </div>
+    </div>
+
+    <!-- Pie Chart: Proportion of Entries by WARD -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h3 class="card-title">Proportion of Entries by WARD</h3>
+        </div>
+        <div class="card-body">
+            {{ pie_chart_ward | safe }}
+        </div>
+    </div>
+
+    <!-- Bar Chart: Count of Entries by FIELD OFFICER -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="card-title">Count of Entries by FIELD OFFICER</h3>
+        </div>
+        <div class="card-body">
+            {{ bar_chart_field_officer | safe }}
+        </div>
+    </div>
+
+    <!-- Pie Chart: Proportion of Entries by FIELD OFFICER -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h3 class="card-title">Proportion of Entries by FIELD OFFICER</h3>
+        </div>
+        <div class="card-body">
+            {{ pie_chart_field_officer | safe }}
+        </div>
+    </div>
+
+    <!-- Tables Section -->
+    <h2 class="text-center mb-4">Tables</h2>
+
+    <!-- Top 10 Field Officers by Total ACRES -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title">Top 10 Field Officers by Total ACRES</h3>
+        </div>
+        <div class="card-body">
+            {{ top_field_officers_list | safe }}
+        </div>
+    </div>
+
+    <!-- Ward Summary (ACRES and Contacts) -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="card-title">Ward Summary (ACRES and Contacts)</h3>
+        </div>
+        <div class="card-body">
+            {{ ward_summary_list | safe }}
+        </div>
+    </div>
+<!-- Count of Entries by Field Officer (Agricultural Agent) -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h3 class="card-title">Count of Entries by Your Agricultural Agent</h3>
+    </div>
+    <div class="card-body">
+        {{ field_officer_entry_count_table | safe }}
+    </div>
+</div>
+    <!-- Download PDF Button -->
+    <div class="d-flex justify-content-center mt-4">
+        <form action="{{ url_for('main_v1.download_pdf') }}" method="POST">
+            <button type="submit" class="btn btn-lg btn-primary">Download PDF</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

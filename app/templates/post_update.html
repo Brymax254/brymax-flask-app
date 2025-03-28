@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow-sm animate__animated animate__fadeInUp">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Post New Update</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('main.post_update') }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+              {{ form.title.label(class="form-label") }}
+              {{ form.title(class="form-control", placeholder="Enter update title") }}
+            </div>
+            <div class="mb-3">
+              {{ form.content.label(class="form-label") }}
+              {{ form.content(class="form-control", placeholder="Enter update content", rows="5") }}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

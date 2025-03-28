@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="h2 fw-bold mb-1">{{ employee.name }}'s Payroll</h1>
+            <p class="text-muted mb-0">Employee ID: #{{ employee.id }} | {{ current_date }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="bi bi-file-earmark-pdf me-2"></i>Download Payslip
+            </button>
+        </div>
+    </div>
+
+    <!-- Payroll Summary Card -->
+    <div class="card border-0 shadow-lg mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Payment Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <!-- Earnings -->
+                <div class="col-md-6">
+                    <div class="card bg-success bg-opacity-10 border-success">
+                        <div class="card-body">
+                            <h6 class="text-success mb-3"><i class="bi bi-currency-dollar me-2"></i>Earnings</h6>
+                            <dl class="row mb-0">
+                                <dt class="col-6">Base Salary</dt>
+                                <dd class="col-6 text-end">${{ salary }}</dd>
+
+                                <dt class="col-6">Overtime Pay</dt>
+                                <dd class="col-6 text-end">${{ overtime_pay | default(0) }}</dd>
+
+                                <dt class="col-6">Bonuses</dt>
+                                <dd class="col-6 text-end">${{ bonuses | default(0) }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deductions -->
+                <div class="col-md-6">
+                    <div class="card bg-danger bg-opacity-10 border-danger">
+                        <div class="card-body">
+                            <h6 class="text-danger mb-3"><i class="bi bi-shield-exclamation me-2"></i>Deductions</h6>
+                            <dl class="row mb-0">
+                                <dt class="col-6">Taxes</dt>
+                                <dd class="col-6 text-end">${{ deductions.taxes | default(0) }}</dd>
+
+                                <dt class="col-6">Insurance</dt>
+                                <dd class="col-6 text-end">${{ deductions.insurance | default(0) }}</dd>
+
+                                <dt class="col-6">Retirement</dt>
+                                <dd class="col-6 text-end">${{ deductions.retirement | default(0) }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Net Pay Highlight -->
+            <div class="alert alert-primary mt-4 d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h5 class="mb-0">Net Payable Amount</h5>
+                    <p class="mb-0 text-muted">After all deductions and contributions</p>
+                </div>
+                <div class="display-4 fw-bold text-primary">
+                    ${{ net_pay }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Features Section -->
+    <div class="row g-4">
+        <!-- Tax Breakdown -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Tax Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 250px;">
+                        {{ tax_breakdown_chart | safe }}
+                    </div>
+                    <div class="mt-3">
+                        <span class="badge bg-primary me-2">Federal Tax: {{ tax_percentages.federal }}%</span>
+                        <span class="badge bg-success me-2">State Tax: {{ tax_percentages.state }}%</span>
+                        <span class="badge bg-info">Local Tax: {{ tax_percentages.local }}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Payment History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payment_history %}
+                                <tr>
+                                    <td>{{ payment.date }}</td>
+                                    <td>${{ payment.amount }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if payment.status == 'Paid' else 'warning' }}">
+                                            {{ payment.status }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Cards -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card border-0 bg-warning bg-opacity-10">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle fs-2 text-warning mb-3"></i>
+                    <h5>Report Discrepancy</h5>
+                    <p class="text-muted small">Found an error in your payslip?</p>
+                    <button class="btn btn-warning">Request Correction</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 bg-info bg-opacity-10">
+                <div class="card-body text-center">
+                    <i class="bi bi-graph-up fs-2 text-info mb-3"></i>
+                    <h5>Salary Trends</h5>
+                    <p class="text-muted small">View your compensation history</p>
+                    <button class="btn btn-info">View Analytics</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 bg-success bg-opacity-10">
+                <div class="card-body text-center">
+                    <i class="bi bi-bank2 fs-2 text-success mb-3"></i>
+                    <h5>Direct Deposit</h5>
+                    <p class="text-muted small">Manage payment preferences</p>
+                    <button class="btn btn-success">Update Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .chart-container {
+        position: relative;
+        min-height: 200px;
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+</style>
+{% endblock %}

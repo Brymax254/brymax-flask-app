@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <aside class="col-lg-3 col-xl-2 d-none d-lg-block">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title text-secondary fw-semibold">
+            <i class="bi bi-clipboard-data me-2"></i>Reporting
+          </h5>
+          <nav class="nav flex-column">
+            <a class="nav-link d-flex align-items-center {% if active_sidebar == 'daily_report' %}active{% endif %}" href="{{ url_for('main.daily_report') }}">
+              <i class="bi bi-pencil-square fs-5 me-3"></i>
+              Daily Report
+            </a>
+            <!-- Additional sidebar links can go here -->
+          </nav>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="col-lg-9 col-xl-10">
+      <div class="container-fluid px-4">
+        <!-- Header for Daily Report Form -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h1 class="h3 fw-bold mb-0">Daily Field Report</h1>
+            <small class="text-muted">Fill in today's report details</small>
+          </div>
+          <button id="toggleDarkMode" class="btn btn-outline-secondary">
+            <i class="bi bi-moon"></i> Toggle Dark Mode
+          </button>
+        </div>
+
+        <!-- Report Form Card -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Submit Your Report</h5>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="{{ url_for('main.submit_daily_report') }}">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="report_date" class="form-label">Date</label>
+                  <input type="date" class="form-control" id="report_date" name="report_date" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="officer_name" class="form-label">Name</label>
+                  <select class="form-select" id="officer_name" name="officer_name" required>
+                    <option value="">Select Officer</option>
+                    <option value="JUDY WAMBUI">JUDY WAMBUI</option>
+                    <option value="NAOMI WAMBUI">NAOMI WAMBUI</option>
+                    <option value="PURITY MAINA">PURITY MAINA</option>
+                    <option value="ANNROSE MUTHONI">ANNROSE MUTHONI</option>
+                    <option value="LILIAN NYAWIRA">LILIAN NYAWIRA</option>
+                    <option value="NELLY WAKERA">NELLY WAKERA</option>
+                    <option value="CATHERINE WANJIKU">CATHERINE WANJIKU</option>
+                    <option value="SYLVIA WAMUCI">SYLVIA WAMUCI</option>
+                    <option value="PATRICK MUTAHI">PATRICK MUTAHI</option>
+                    <option value="FRANCIS NDEGWA">FRANCIS NDEGWA</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="farmers_registered" class="form-label">Farmers Registered</label>
+                  <input type="number" class="form-control" id="farmers_registered" name="farmers_registered" placeholder="Number of farmers" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="total_acres" class="form-label">Total Acres</label>
+                  <input type="number" step="1" class="form-control" id="total_acres" name="total_acres" placeholder="Total acres" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="tractors_in_area" class="form-label">Number of Tractors in Your Area</label>
+                  <input type="number" class="form-control" id="tractors_in_area" name="tractors_in_area" placeholder="Number of tractors" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="acres_ploughed" class="form-label">Total Acres Ploughed</label>
+                  <input type="number" class="form-control" id="acres_ploughed" name="acres_ploughed" placeholder="Acres ploughed" required>
+                </div>
+                <div class="col-md-12">
+                  <label for="staff_attendance" class="form-label">Staff in Attendance</label>
+                  <select class="form-select" id="staff_attendance" name="staff_attendance" required>
+                    <option value="">Select Staff</option>
+                    <option value="PATRICK DIRECTOR">PATRICK DIRECTOR</option>
+                    <option value="FRANCIS OPERATIONS">FRANCIS OPERATIONS</option>
+                    <option value="JENNIFER FINANCE">JENNIFER FINANCE</option>
+                    <option value="KARIMI DATA MANAGER">KARIMI DATA MANAGER</option>
+                    <option value="SYLVIA SUPERVISOR">SYLVIA SUPERVISOR</option>
+                    <option value="NELLY SUPERVISOR">NELLY SUPERVISOR</option>
+                    <option value="NONE">NONE</option>
+                    <option value="OTHER ENEK OFFICIALS">OTHER ENEK OFFICIALS</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-check2-circle me-2"></i>Submit Report</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Officers Information Card -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Officers Information</h5>
+          </div>
+          <div class="card-body">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Agronica Training</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Judy Wambui</td>
+                  <td>0745168483</td>
+                  <td>YES</td>
+                  <td>Mwiyogo</td>
+                </tr>
+                <tr>
+                  <td>Naomi Wambui</td>
+                  <td>0727213303</td>
+                  <td>YES</td>
+                  <td>Mugunda</td>
+                </tr>
+                <tr>
+                  <td>Purity Maina</td>
+                  <td>0716727301</td>
+                  <td>YES</td>
+                  <td>Gatarakwa</td>
+                </tr>
+                <tr>
+                  <td>Annrose Muthoni</td>
+                  <td>0704146071</td>
+                  <td>YES</td>
+                  <td>Mugunda</td>
+                </tr>
+                <tr>
+                  <td>Lilian Nyawira</td>
+                  <td>0794397592</td>
+                  <td>YES</td>
+                  <td>Nyangati</td>
+                </tr>
+                <tr>
+                  <td>Catherine Wanjiku</td>
+                  <td>0720838018</td>
+                  <td>YES</td>
+                  <td>Mutithi</td>
+                </tr>
+                <tr>
+                  <td>SYLVIA WAMUCI</td>
+                  <td>0745555567</td>
+                  <td>YES</td>
+                  <td>Gakawa</td>
+                </tr>
+                <tr>
+                  <td>FRANCIS NDEGWA</td>
+                  <td>0759234580</td>
+                  <td>YES</td>
+                  <td>Mutithi</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="h4 fw-bold">Reports Dashboard</h2>
+          <div>
+            <input type="text" id="searchInput" class="form-control d-inline-block w-auto me-2" placeholder="Search Reports...">
+            <select id="filterSelect" class="form-select d-inline-block w-auto">
+              <option value="">All Officers</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Reports Table Card with Dynamic Content -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table id="reportsTable" class="table table-bordered table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Date</th>
+                    <th>Officer Name</th>
+                    <th>Farmers Registered</th>
+                    <th>Total Acres</th>
+                    <th>Tractors in Area</th>
+                    <th>Acres Ploughed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for report in reports %}
+                  <tr data-bs-toggle="modal" data-bs-target="#reportModal" data-report='{{ report|tojson }}'>
+                    <td>{{ report.report_date }}</td>
+                    <td>{{ report.officer_name }}</td>
+                    <td>{{ report.farmers_registered }}</td>
+                    <td>{{ report.total_acres }}</td>
+                    <td>{{ report.tractors_in_area }}</td>
+                    <td>{{ report.acres_ploughed }}</td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td colspan="6" class="text-center">No reports available.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  document.getElementById('toggleDarkMode').addEventListener('click', function () {
+    document.body.classList.toggle('bg-dark');
+    document.body.classList.toggle('text-light');
+  });
+</script>
+{% endblock %}
