@@ -20,10 +20,16 @@ def create_app():
         app.config.from_object(TestingConfig)
     else:
         app.config.from_object(DevelopmentConfig)
+    # Determine the environment (production or local)
+    if os.getenv('FLASK_ENV') == 'production':
+        # Production environment (Linux server)
+        UPLOAD_FOLDER = "/var/www/brymax.xyz/app/uploads"
+    else:
+        # Local development (Windows)
+        UPLOAD_FOLDER = r"D:\BRYMAX\BRYMAX OFFICIAL DATA MANAGEMENT SYSTEM2\app\uploads"
 
-    # Set the upload folder configuration
-    app.config['UPLOAD_FOLDER'] = r'D:\BRYMAX\BRYMAX OFFICIAL DATA MANAGEMENT SYSTEM2\app\uploads'
-
+    # Apply the configuration
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     # Initialize extensions
     CSRFProtect(app)
     db.init_app(app)  # Initialize SQLAlchemy with the app
