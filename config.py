@@ -11,8 +11,10 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'app', 'uploads')
-    ALLOWED_EXTENSIONS = {'xlsx'}
+    UPLOAD_FOLDER = r"D:\BRYMAX\BRYMAX OFFICIAL DATA MANAGEMENT SYSTEM2\app\uploads"
+
+    # Allow multiple file types
+    ALLOWED_EXTENSIONS = {'xlsx', 'xls', 'pdf', 'png', 'jpg', 'jpeg', 'docx', 'txt'}
 
     WTF_CSRF_ENABLED = False  # Disable CSRF protection
 

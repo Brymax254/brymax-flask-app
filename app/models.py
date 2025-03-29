@@ -88,7 +88,7 @@ class Report(db.Model):
         return f"<Report {self.id} - {self.officer_name}>"
 
 class Farmer(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     unique_number = db.Column(db.String(10), unique=True, nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
     county = db.Column(db.String(50), nullable=False)

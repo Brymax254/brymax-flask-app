@@ -53,3 +53,4 @@ def create_app():
 def load_user(user_id):
     from .models import User  # Import your User model
     return User.query.get(int(user_id))
+
