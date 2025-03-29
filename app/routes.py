@@ -15,6 +15,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 import os
 from .forms import PostUpdateForm
+
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
@@ -431,13 +432,13 @@ def view_reports():
             db.func.sum(DailyReport.acres_ploughed).label("total_acres")
         ).group_by(DailyReport.officer_name).all()
 
-        # Aggregate trends data (e.g., monthly or weekly)
+        # ✅ Fixed Trend Data Query: Using `func.to_char()` instead of `strftime()`
         trends_data = db.session.query(
             DailyReport.officer_name,
-            db.func.strftime('%Y-%m', DailyReport.report_date).label('month'),
+            db.func.to_char(DailyReport.report_date, 'YYYY-MM').label("month"),
             db.func.sum(DailyReport.farmers_registered).label("monthly_farmers"),
             db.func.sum(DailyReport.acres_ploughed).label("monthly_acres")
-        ).group_by(DailyReport.officer_name, db.func.strftime('%Y-%m', DailyReport.report_date)).all()
+        ).group_by(DailyReport.officer_name, db.func.to_char(DailyReport.report_date, 'YYYY-MM')).all()
 
         # Aggregate staff attendance
         staff_data = db.session.query(
@@ -455,6 +456,9 @@ def view_reports():
             staff_data=staff_data
         )
     except Exception as e:
+        # ✅ Log error for debugging (optional)
+        print(f"Error in view_reports(): {e}")
+
         # Handle exceptions gracefully and flash an error message.
         flash(f"An error occurred while fetching reports: {str(e)}", "danger")
         return redirect(url_for("main.dashboard"))

@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db
 from datetime import datetime, date
 
+
 # ---------------------------
 # User Model (Authentication)
 # ---------------------------
@@ -89,19 +90,19 @@ class Report(db.Model):
 
 class Farmer(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    unique_number = db.Column(db.String(10), unique=True, nullable=False)
+    unique_number = db.Column(db.String(20), unique=True, nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
     county = db.Column(db.String(50), nullable=False)
     subcounty = db.Column(db.String(50), nullable=False)
     ward = db.Column(db.String(50), nullable=False)
     location = db.Column(db.String(50), nullable=False)
-    phone_number = db.Column(db.String(15), unique=True, nullable=False)
+    phone_number = db.Column(db.String(20), unique=True, nullable=False)
     village = db.Column(db.String(50), nullable=False)
     land_size = db.Column(db.Float, nullable=False)
     season = db.Column(db.String(3), nullable=False)  # "OND" or "MAM"
     year = db.Column(db.Integer, nullable=False)
     farmer_number = db.Column(db.Integer, nullable=False)
-    fertilizer_type = db.Column(db.String(50), nullable=True)
+    fertilizer_type = db.Column(db.String(100), nullable=True)
     kgs_issued = db.Column(db.Float, nullable=True)
     kgs_harvested_clean = db.Column(db.Float, nullable=True)
     kgs_harvested_husk = db.Column(db.Float, nullable=True)
