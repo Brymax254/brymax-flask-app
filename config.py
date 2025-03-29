@@ -1,28 +1,31 @@
 import os
 
+
 class Config:
-    SECRET_KEY = '9bbfdf8356bd72490566aedb34ec7600d3397a899e64813e'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///D:/BRYMAX/BRYMAX OFFICIAL DATA MANAGEMENT SYSTEM2/brymax.db'
+    SECRET_KEY = os.environ.get('SECRET_KEY', '9bbfdf8356bd72490566aedb34ec7600d3397a899e64813e')
+
+    # Use PostgreSQL in production, fallback to SQLite for local development
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        'DATABASE_URL',
+        'postgresql://brymax_db_0rar_user:UJAUb5GwFatfUxd5CvxCCltSNEN5asAf@dpg-cvjh7a24d50c73eep780-a.oregon-postgres.render.com/brymax_db_0rar?sslmode=require'
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    UPLOAD_FOLDER = 'app/uploads'
+
+    UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'app', 'uploads')
     ALLOWED_EXTENSIONS = {'xlsx'}
+
     WTF_CSRF_ENABLED = False  # Disable CSRF protection
 
-# Development environment configuration
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_ECHO = True  # Enable SQL query logging for debugging
 
-# Testing environment configuration
+
+class ProductionConfig(Config):
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')  # Requires PostgreSQL on Render
+
+
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test_brymax.db'  # Use a separate test database
-    WTF_CSRF_ENABLED = False  # Disable CSRF during testing
-
-# Production environment configuration
-class ProductionConfig(Config):
-    DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        'sqlite:///D:/BRYMAX/BRYMAX OFFICIAL DATA MANAGEMENT SYSTEM2/brymax.db'
-    )  # Default to SQLite if DATABASE_URL env var is not set
