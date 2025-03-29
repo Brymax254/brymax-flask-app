@@ -995,6 +995,9 @@ def upload_data():
 def uploaded_file(filename):
     upload_folder = current_app.config.get('UPLOAD_FOLDER')
     full_path = os.path.join(upload_folder, filename)
+
+    print(f"Checking file: {full_path}")  # Debugging line
+
     if os.path.exists(full_path):
         return send_from_directory(upload_folder, filename)
     else:

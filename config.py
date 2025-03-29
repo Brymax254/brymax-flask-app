@@ -1,9 +1,13 @@
 import os
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', '9bbfdf8356bd72490566aedb34ec7600d3397a899e64813e')
 
+    class Config:
+        UPLOAD_FOLDER = UPLOAD_FOLDER
     # Use PostgreSQL in production, fallback to SQLite for local development
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL',
