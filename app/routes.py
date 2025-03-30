@@ -77,22 +77,48 @@ def fetch_reports():
     return jsonify(report_data)
 
 
-@main_bp.route('/dashboard')
+@main_bp.route('/dashboard', methods=["GET", "POST"])
 @login_required
 def dashboard():
     """
     Dashboard route to display farmers, dynamically retrieve uploaded documents from S3,
-    and show admin updates, memos, and advertisements.
+    allow admins to post updates directly, and show admin updates, memos, and advertisements.
     """
+    # Process update submission if the request is POST
+    if request.method == "POST":
+        # Only allow admin users to post updates
+        if not current_user.is_admin:
+            flash("Admin access only.", "danger")
+            return redirect(url_for('main.dashboard'))
+
+        update_type = request.form.get("content_type")
+        content = request.form.get("content")
+        if not update_type or not content:
+            flash("Please fill in all fields.", "warning")
+            return redirect(url_for('main.dashboard'))
+
+        # Create a new update entry.
+        # We store the type in the field 'content_type'; your model will then reflect whether
+        # this is an update, memo, or advertisement.
+        new_update = AdminContent(content_type=update_type, content=content, created_at=datetime.utcnow())
+        db.session.add(new_update)
+        try:
+            db.session.commit()
+            flash(f"{update_type.capitalize()} posted successfully!", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error posting update: {e}", "danger")
+        return redirect(url_for('main.dashboard'))
+
+    # For GET requests, proceed to fetch and display dashboard data.
     # Fetch farmers from the database
     farmers = Farmer.query.all()
     farmer = farmers[0] if farmers else None
 
-    # Fetch files from S3 bucket
+    # Fetch files from the S3 bucket
     try:
         response = s3.list_objects_v2(Bucket=Config.AWS_STORAGE_BUCKET_NAME)
         files = [obj['Key'] for obj in response.get('Contents', [])] if 'Contents' in response else []
-
         if not files:
             flash("No documents found in the cloud.", "info")
     except Exception as e:
@@ -102,9 +128,10 @@ def dashboard():
     # Fetch admin updates, memos, and advertisements from the database
     latest_update = AdminContent.query.filter_by(content_type='update').order_by(AdminContent.created_at.desc()).first()
     memo = AdminContent.query.filter_by(content_type='memo').order_by(AdminContent.created_at.desc()).first()
-    advertisement = AdminContent.query.filter_by(content_type='advertisement').order_by(AdminContent.created_at.desc()).first()
+    advertisement = AdminContent.query.filter_by(content_type='advertisement').order_by(
+        AdminContent.created_at.desc()).first()
 
-    # Render the dashboard template
+    # Render the dashboard template with all the required variables
     return render_template(
         'dashboard.html',
         active_sidebar='dashboard',

@@ -3,18 +3,7 @@
 {% block content %}
 <div class="container-fluid py-4" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0); min-height: 100vh;">
   <div class="row">
-
-   <!-- Top Navigation Section -->
-    <div class="container mt-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="mb-0">Dashboard</h1>
-        <!-- Button to Navigate to Uploaded Documents -->
-        <a href="#uploaded-documents" class="btn btn-outline-primary">
-          Go to Uploaded Documents
-        </a>
-      </div>
-    </div>
-    <hr>
+    <!-- Optionally, you can remove the top button if you prefer it only in the sidebar -->
 
     <!-- Sidebar Column -->
     <div class="col-lg-3 col-xl-2">
@@ -29,47 +18,49 @@
             <a class="nav-link" href="{{ url_for('main.fetch_farmer_default') }}">Fetch Data</a>
             <a class="nav-link" href="{{ url_for('main.manage_users') }}">Manage Users</a>
             <a class="nav-link" href="{{ url_for('main.add_user') }}">Add User</a>
+            <!-- New Button to Navigate to Uploaded Documents -->
+            <a href="#uploaded-documents" class="btn btn-outline-primary mt-3">
+              Go to Uploaded Documents
+            </a>
           </nav>
         </div>
       </div>
 
-      <!-- Additional Sidebar Cards -->
+      <!-- Sidebar Statistics and Dynamic Content -->
       <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp">
         <div class="card-body">
           <h6 class="card-title text-primary">Total Farmers</h6>
-          <p class="card-text display-6 mb-0">125</p>
+          <p class="card-text display-6 mb-0">{{ total_farmers }}</p>
         </div>
       </div>
 
       <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
         <div class="card-body">
           <h6 class="card-title text-warning">Total Payments</h6>
-          <p class="card-text display-6 mb-0">$32K</p>
+          <p class="card-text display-6 mb-0">{{ total_payments }}</p>
         </div>
       </div>
 
       <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
-  <div class="card-body">
-    <h6 class="card-title text-success">Latest Update</h6>
-    <p class="card-text small mb-0">
-      {{ latest_update.content if latest_update else "No updates available." }}
-    </p>
-  </div>
-</div>
-
+        <div class="card-body">
+          <h6 class="card-title text-success">Latest Update</h6>
+          <p class="card-text small mb-0">
+            {{ latest_update.content if latest_update else "No updates available." }}
+          </p>
+        </div>
+      </div>
 
       <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
-  <div class="card-body">
-    <h6 class="card-title text-info">Announcements</h6>
-    <p class="card-text small mb-0">
-      {{ memo.content if memo else "No memos available." }}
-    </p>
-    <p class="card-text small mb-0">
-      {{ advertisement.content if advertisement else "No advertisements available." }}
-    </p>
-  </div>
-</div>
-
+        <div class="card-body">
+          <h6 class="card-title text-info">Announcements</h6>
+          <p class="card-text small mb-0">
+            {{ memo.content if memo else "No memos available." }}
+          </p>
+          <p class="card-text small mb-0">
+            {{ advertisement.content if advertisement else "No advertisements available." }}
+          </p>
+        </div>
+      </div>
 
       <!-- Logout Button -->
       <div class="d-grid">
@@ -277,6 +268,85 @@
             </div>
           </div>
         </div>
+<!-- Issue Fertilizer Card -->
+<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 0.9s;">
+    <div class="card-body text-center">
+      <div class="icon mb-3"
+           style="font-size: 2.5rem; color: #fff;
+                  background: linear-gradient(45deg, #f57c00, #e65100);
+                  border-radius: 50%; width: 60px; height: 60px;
+                  display: flex; align-items: center; justify-content: center;">
+        <i class="bi bi-droplet"></i>
+      </div>
+      <h6 class="card-title">Issue Fertilizer</h6>
+      <p class="card-text small text-muted">Distribute fertilizers to farmers.</p>
+      <a href="{{ url_for('main.issue_fertilizer') }}" class="btn btn-sm btn-outline-warning w-100">
+        View Fertilizer
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Issue Manure Card -->
+<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 1.0s;">
+    <div class="card-body text-center">
+      <div class="icon mb-3"
+           style="font-size: 2.5rem; color: #fff;
+                  background: linear-gradient(45deg, #6d4c41, #3e2723);
+                  border-radius: 50%; width: 60px; height: 60px;
+                  display: flex; align-items: center; justify-content: center;">
+        <i class="bi bi-basket3"></i>
+      </div>
+      <h6 class="card-title">Issue Manure</h6>
+      <p class="card-text small text-muted">Manage manure distribution for sustainable soil health.</p>
+      <a href="{{ url_for('main.issue_manure') }}" class="btn btn-sm btn-outline-dark w-100">
+        View Manure
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Issue Pesticides Card (Version 1) -->
+<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 1.1s;">
+    <div class="card-body text-center">
+      <div class="icon mb-3"
+           style="font-size: 2.5rem; color: #fff;
+                  background: linear-gradient(45deg, #d32f2f, #c62828);
+                  border-radius: 50%; width: 60px; height: 60px;
+                  display: flex; align-items: center; justify-content: center;">
+        <i class="bi bi-shield-fill-exclamation"></i>
+      </div>
+      <h6 class="card-title">Issue Pesticides</h6>
+      <p class="card-text small text-muted">Protect crops with effective pesticide use.</p>
+      <a href="{{ url_for('main.issue_pesticides') }}" class="btn btn-sm btn-outline-danger w-100">
+        View Pesticides
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Issue Pesticides Card (Version 2) -->
+<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="card custom-card shadow-sm animate__animated animate__zoomIn" style="animation-delay: 1.2s;">
+    <div class="card-body text-center">
+      <div class="icon mb-3"
+           style="font-size: 2.5rem; color: #fff;
+                  background: linear-gradient(45deg, #ef5350, #e53935);
+                  border-radius: 50%; width: 60px; height: 60px;
+                  display: flex; align-items: center; justify-content: center;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <h6 class="card-title">Issue Pesticides</h6>
+      <p class="card-text small text-muted">Monitor and distribute pesticides safely.</p>
+      <a href="{{ url_for('main.issue_pesticides') }}" class="btn btn-sm btn-outline-danger w-100">
+        View Pesticides
+      </a>
+    </div>
+  </div>
+</div>
 
         <!-- Google Sheets Visualize Card -->
         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
@@ -342,50 +412,61 @@
 </div>
 
 
-      <!-- Admin Updates & Advertisements Section -->
-<div class="col-12 col-lg-6">
-  <div class="card shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
-    <div class="card-header bg-gradient-secondary text-white">
-      <h5 class="mb-0">Admin Updates & Advertisements</h5>
+   <!-- Admin Updates & Advertisements Section -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <div class="card-header bg-gradient-secondary text-white">
+          <h5 class="mb-0">Admin Updates & Advertisements</h5>
+        </div>
+        <div class="card-body">
+          <!-- Update Form: Posts Directly to the Dashboard -->
+          <form action="{{ url_for('main.dashboard') }}" method="POST">
+            {% if form is defined %}
+              {{ form.hidden_tag() }}
+            {% endif %}
+            <div class="mb-3">
+              <label for="content_type" class="form-label">Select Content Type</label>
+              <select class="form-select" id="content_type" name="content_type" required>
+                <option value="">-- Select Type --</option>
+                <option value="update">Latest Update</option>
+                <option value="memo">Memo</option>
+                <option value="advertisement">Advertisement</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="content" class="form-label">Content</label>
+              <textarea class="form-control" id="content" name="content" rows="3" placeholder="Type your update here..." required></textarea>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success btn-lg">Post Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      <!-- Display Current Updates -->
 
-      <!-- File Upload Form for Admin Data Upload -->
-<form action="{{ url_for('main.upload_data') }}" method="POST" enctype="multipart/form-data">
-  {% if form is defined %}
-    {{ form.hidden_tag() }}
-  {% endif %}
-  <div class="mb-3">
-    <label for="files" class="form-label">Upload Data Files</label>
-    <input class="form-control" type="file" id="files" name="files" multiple accept=".pdf, image/png, image/jpeg, .xls, .xlsx">
-    <div class="form-text">Allowed file types: PDF, PNG, JPEG, Excel</div>
-  </div>
-  <button type="submit" class="btn btn-sm btn-outline-success">Upload Files</button>
-</form>
-
-
-      <!-- Link to Post a New Update -->
-     <form action="{{ url_for('main.post_update') }}" method="POST">
-  {% if form is defined %}
-    {{ form.hidden_tag() }}
-  {% endif %}
-  <div class="mb-3">
-    <label for="content_type" class="form-label">Select Content Type</label>
-    <select class="form-control" id="content_type" name="content_type">
-      <option value="update">Latest Update</option>
-      <option value="memo">Memo</option>
-      <option value="advertisement">Advertisement</option>
-    </select>
-  </div>
-  <div class="mb-3">
-    <label for="content" class="form-label">Content</label>
-    <textarea class="form-control" id="content" name="content" rows="3"></textarea>
-  </div>
-  <button type="submit" class="btn btn-sm btn-outline-success">Post Update</button>
-</form>
-
-
+    <!-- File Upload Form for Admin Data Upload -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+        <div class="card-header bg-gradient-primary text-white">
+          <h5 class="mb-0">Upload Data Files</h5>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('main.upload_data') }}" method="POST" enctype="multipart/form-data">
+            {% if form is defined %}
+              {{ form.hidden_tag() }}
+            {% endif %}
+            <div class="mb-3">
+              <label for="files" class="form-label">Select Files</label>
+              <input type="file" class="form-control" id="files" name="files" multiple accept=".pdf, image/png, image/jpeg, .xls, .xlsx" required>
+              <div class="form-text">Allowed file types: PDF, PNG, JPEG, Excel</div>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">Upload Files</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 </div>

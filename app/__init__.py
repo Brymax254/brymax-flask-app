@@ -45,6 +45,10 @@ def create_app():
     app.register_blueprint(main_bp)
     from .employee_routes import employee_bp  # Employee routes blueprint
     app.register_blueprint(employee_bp)
+    from .sequence_utils import ensure_updates_sequence
+    # After initializing and creating tables
+    with app.app_context():
+        ensure_updates_sequence()
 
     # Error Handling for Database Initialization
     try:

@@ -2,7 +2,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db
 from datetime import datetime, date
-
+from sqlalchemy import Sequence
 
 # ---------------------------
 # User Model (Authentication)
@@ -199,9 +199,10 @@ class Payroll(db.Model):
     def __repr__(self):
         return f"<Payroll {self.amount}>"
 
+
 class Update(db.Model):
     __tablename__ = "updates"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, Sequence('updates_id_seq'), primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -234,3 +235,6 @@ class AdminContent(db.Model):
 
      def __repr__(self):
          return f"<AdminContent {self.content_type}>"
+
+
+
