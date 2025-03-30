@@ -5,10 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from .extensions import db  # Import the single SQLAlchemy instance
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
-db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
 
