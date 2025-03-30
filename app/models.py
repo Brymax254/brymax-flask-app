@@ -224,3 +224,13 @@ class DailyReport(db.Model):
 
     def __repr__(self):
         return f"<DailyReport {self.report_date} - {self.officer_name}>"
+
+    from app.extensions import db
+class AdminContent(db.Model):
+     id = db.Column(db.Integer, primary_key=True)
+     content_type = db.Column(db.String(50), nullable=False)  # 'update', 'memo', 'advertisement'
+     content = db.Column(db.Text, nullable=False)
+     created_at = db.Column(db.DateTime, default=db.func.now())
+
+     def __repr__(self):
+         return f"<AdminContent {self.content_type}>"

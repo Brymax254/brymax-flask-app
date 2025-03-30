@@ -1,6 +1,6 @@
 import pandas as pd
 import requests
-from flask import render_template, current_app, flash, redirect, session, url_for, jsonify, request, make_response, Blueprint, send_from_directory
+from flask import render_template, current_app, send_file, flash, redirect, session, url_for, jsonify, request, make_response, Blueprint, send_from_directory
 from datetime import datetime, date
 import logging
 from io import StringIO
@@ -13,9 +13,13 @@ from flask_login import login_required, current_user, login_user, logout_user
 from app.utils import generate_farmer_id, admin_required
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
-import os
+import os, io
 from .forms import PostUpdateForm
-
+from config import Config
+import boto3
+from botocore.exceptions import ClientError
+from app.models import AdminContent
+from app.extensions import db
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
@@ -76,28 +80,42 @@ def fetch_reports():
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
-    # For example, fetch all farmers from the database
+    """
+    Dashboard route to display farmers, dynamically retrieve uploaded documents from S3,
+    and show admin updates, memos, and advertisements.
+    """
+    # Fetch farmers from the database
     farmers = Farmer.query.all()
     farmer = farmers[0] if farmers else None
 
-    # Get files from the UPLOAD_FOLDER
-    upload_folder = current_app.config.get('UPLOAD_FOLDER')
-    files = []
-    if upload_folder and os.path.exists(upload_folder):
-        # List all files (ignoring hidden files)
-        files = [f for f in os.listdir(upload_folder) if not f.startswith('.')]
-        if not files:
-            flash("No documents found in the uploads folder.", "warning")
-    else:
-        flash("Uploads folder not found or not configured.", "danger")
+    # Fetch files from S3 bucket
+    try:
+        response = s3.list_objects_v2(Bucket=Config.AWS_STORAGE_BUCKET_NAME)
+        files = [obj['Key'] for obj in response.get('Contents', [])] if 'Contents' in response else []
 
+        if not files:
+            flash("No documents found in the cloud.", "info")
+    except Exception as e:
+        flash(f"Error fetching documents from S3: {str(e)}", "danger")
+        files = []
+
+    # Fetch admin updates, memos, and advertisements from the database
+    latest_update = AdminContent.query.filter_by(content_type='update').order_by(AdminContent.created_at.desc()).first()
+    memo = AdminContent.query.filter_by(content_type='memo').order_by(AdminContent.created_at.desc()).first()
+    advertisement = AdminContent.query.filter_by(content_type='advertisement').order_by(AdminContent.created_at.desc()).first()
+
+    # Render the dashboard template
     return render_template(
         'dashboard.html',
         active_sidebar='dashboard',
         farmers=farmers,
         farmer=farmer,
-        files=files
+        files=files,
+        latest_update=latest_update,
+        memo=memo,
+        advertisement=advertisement,
     )
+
     #Employee Management Routes
 @employee_bp.route('/add_employee', methods=['GET', 'POST'])
 def add_employee():
@@ -962,59 +980,211 @@ ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpeg', 'jpg', 'xls', 'xlsx'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Route to upload data (restricted to admins)
-@main_bp.route('/upload_data', methods=['POST'])
+
+# Initialize the S3 client using your Cloudflare R2 configuration
+s3 = boto3.client(
+    "s3",
+    endpoint_url=Config.AWS_S3_ENDPOINT_URL,
+    aws_access_key_id=Config.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=Config.AWS_SECRET_ACCESS_KEY,
+)
+
+
+def allowed_file(filename):
+    """
+    Check if the file extension is allowed based on configuration.
+    """
+    allowed_extensions = Config.ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+
+def upload_to_s3(file_path, bucket_name, s3_key):
+    """
+    Upload a single file to the S3 bucket.
+
+    Args:
+        file_path (str): The local path to the file being uploaded.
+        bucket_name (str): The name of the S3 bucket.
+        s3_key (str): The key (path) under which the file will be stored in the bucket.
+
+    Returns:
+        bool: True if the upload succeeds, False otherwise.
+    """
+    try:
+        # Upload the file to the specified S3 bucket
+        s3.upload_file(file_path, bucket_name, s3_key)
+        print(f"Successfully uploaded '{s3_key}' to bucket '{bucket_name}'.")
+        return True
+    except ClientError as e:
+        # Log detailed error message
+        error_message = f"Error uploading '{s3_key}' to S3: {str(e)}"
+        print(error_message)
+        flash(error_message, "danger")
+        return False
+    except FileNotFoundError:
+        # Handle cases where the file does not exist
+        error_message = f"File '{file_path}' not found. Please check the file path."
+        print(error_message)
+        flash(error_message, "danger")
+        return False
+    except Exception as e:
+        # Catch-all for unexpected exceptions
+        error_message = f"Unexpected error occurred during upload: {str(e)}"
+        print(error_message)
+        flash(error_message, "danger")
+        return False
+
+
+@main_bp.route('/downloads/<path:filename>')
+@login_required
+def download_file(filename):
+    """
+    Route to download files from S3 as attachments.
+    Handles errors gracefully and redirects users if an issue occurs.
+    """
+    try:
+        file_obj = io.BytesIO()
+        s3.download_fileobj(Config.AWS_STORAGE_BUCKET_NAME, filename, file_obj)
+        file_obj.seek(0)  # Reset the file pointer
+        return send_file(file_obj, download_name=filename, as_attachment=True)
+    except Exception as e:
+        flash(f"Error retrieving file: {str(e)}", "danger")
+        return redirect(url_for('main.dashboard'))
+
+
+@main_bp.route('/uploads/<path:filename>')
+@login_required
+def uploaded_file(filename):
+    """
+    Route to display uploaded files inline (e.g., PDFs and images).
+    Determines MIME type dynamically based on file extension.
+    """
+    try:
+        file_obj = io.BytesIO()
+        s3.download_fileobj(Config.AWS_STORAGE_BUCKET_NAME, filename, file_obj)
+        file_obj.seek(0)
+
+        # Determine MIME type based on file extension
+        ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ""
+        mimetypes = {
+            "pdf": "application/pdf",
+            "png": "image/png",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg"
+        }
+        mimetype = mimetypes.get(ext, "application/octet-stream")
+
+        # Serve file for inline display
+        return send_file(file_obj, mimetype=mimetype, as_attachment=False)
+    except Exception as e:
+        flash(f"Error displaying file: {str(e)}", "danger")
+        return redirect(url_for('main.dashboard'))
+
+
+@main_bp.route('/documents')
+@login_required
+def documents():
+    """
+    Route to list all uploaded documents directly from S3.
+    """
+    try:
+        # List all objects in the S3 bucket
+        response = s3.list_objects_v2(Bucket=Config.AWS_STORAGE_BUCKET_NAME)
+        files = []
+
+        # Extract the file names (keys) from the response
+        if 'Contents' in response:
+            files = [obj['Key'] for obj in response['Contents']]
+
+        if not files:
+            flash("No documents found in the cloud.", "info")
+
+        return render_template("documents.html", files=files)
+
+    except Exception as e:
+        flash(f"Error retrieving files from the cloud: {str(e)}", "danger")
+        return redirect(url_for('main.dashboard'))
+
+
+@main_bp.route('/upload_data', methods=['POST'], endpoint='upload_data')
 @login_required
 def upload_data():
+    """
+    Handles admin file uploads and automatically uploads them to the S3 bucket.
+    """
     if not current_user.is_admin:
         flash("Admin access only", "danger")
         return redirect(url_for('main.dashboard'))
 
     if 'files' not in request.files:
-        flash("No file part", "danger")
+        flash("No file part in the request.", "danger")
         return redirect(url_for('main.dashboard'))
 
     files = request.files.getlist('files')
 
-    # Access upload folder inside the route to avoid the context error
-    upload_folder = current_app.config.get('UPLOAD_FOLDER')
-
     for file in files:
         if file and allowed_file(file.filename):
+            # Secure and save the filename
             filename = secure_filename(file.filename)
-            file.save(os.path.join(upload_folder, filename))
+            s3_key = filename  # You can add additional folder structure logic here if needed
+
+            try:
+                # Upload file to S3
+                s3.upload_fileobj(file, Config.AWS_STORAGE_BUCKET_NAME, s3_key)
+                flash(f"'{filename}' uploaded successfully!", "success")
+            except Exception as e:
+                flash(f"Error uploading '{filename}': {str(e)}", "danger")
         else:
             flash(f"File type not allowed: {file.filename}", "danger")
-            return redirect(url_for('main.dashboard'))
 
-    flash("Files uploaded successfully", "success")
+    # Redirect back to the dashboard
     return redirect(url_for('main.dashboard'))
-# Route to serve uploaded files
-@main_bp.route('/uploads/<path:filename>')
+
+@main_bp.route('/delete_file/<path:filename>', methods=['POST'])
 @login_required
-def uploaded_file(filename):
-    upload_folder = current_app.config.get('UPLOAD_FOLDER')
-    full_path = os.path.join(upload_folder, filename)
-
-    print(f"Checking file: {full_path}")  # Debugging line
-
-    if os.path.exists(full_path):
-        return send_from_directory(upload_folder, filename)
-    else:
-        return f"File not found: {full_path}", 404
-
-
-# Route to list all documents in the uploads folder
-@main_bp.route('/documents')
-@login_required
-def documents():
-    upload_folder = current_app.config.get('UPLOAD_FOLDER')
-    if not upload_folder or not os.path.exists(upload_folder):
-        flash("Uploads folder not found.", "danger")
+def delete_file(filename):
+    """
+    Route to delete a specific file from the S3 bucket.
+    Only accessible by admin users.
+    """
+    if not current_user.is_admin:
+        flash("Admin access only", "danger")
         return redirect(url_for('main.dashboard'))
 
-    # List all files (filtering out hidden files)
-    all_files = [f for f in os.listdir(upload_folder) if not f.startswith('.')]
-    return render_template("documents.html", files=all_files)
+    try:
+        # Delete the file from the S3 bucket
+        s3.delete_object(Bucket=Config.AWS_STORAGE_BUCKET_NAME, Key=filename)
+        flash(f"Successfully deleted '{filename}' from the cloud.", "success")
+    except ClientError as e:
+        flash(f"Error deleting '{filename}': {str(e)}", "danger")
+    except Exception as e:
+        flash(f"Unexpected error occurred: {str(e)}", "danger")
+
+    return redirect(url_for('main.dashboard'))
+
+
+@main_bp.route('/post_update', methods=['POST'], endpoint='post_update_v1')
+@login_required
+def post_update():
+    """
+    Route to save admin updates and announcements to the database.
+    """
+    if not current_user.is_admin:
+        flash("Admin access only", "danger")
+        return redirect(url_for('main.dashboard'))
+
+    content_type = request.form.get('content_type')  # E.g., 'update', 'memo', 'advertisement'
+    content = request.form.get('content')
+
+    if content_type and content:
+        new_content = AdminContent(content_type=content_type, content=content)
+        db.session.add(new_content)
+        db.session.commit()
+        flash(f"{content_type.capitalize()} added successfully!", "success")
+    else:
+        flash("Failed to post update. Please provide valid content.", "danger")
+
+    return redirect(url_for('main.dashboard'))
+
 if __name__ == '__main__':
     app.run(debug=True)
