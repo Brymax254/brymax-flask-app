@@ -1,22 +1,72 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
-  <h2 class="mt-4">Record Harvest</h2>
-  <form method="POST" action="{{ url_for('main.record_harvest') }}">
-    <div class="mb-3">
-      <label for="farmer_id" class="form-label">Farmer ID</label>
-      <input type="text" class="form-control" id="farmer_id" name="farmer_id" required>
+  <h2 class="mt-4 text-center text-primary fw-bold">Record Harvest</h2>
+
+  <!-- Search Farmer Section -->
+  <form method="POST" action="{{ url_for('main.fetch_farmer_details') }}" id="search-form" class="mb-5 shadow-lg p-4 rounded-3">
+    <h4 class="text-secondary mb-3">Search Farmer</h4>
+    <div class="input-group">
+      <select class="form-select form-select-lg" id="search_type" name="search_type" required>
+        <option value="id">Search by Farmer ID</option>
+        <option value="phone">Search by Phone Number</option>
+      </select>
+      <input type="text" class="form-control form-control-lg" id="search_term" name="search_term" placeholder="Enter Farmer ID or Phone Number" required>
+      <button type="submit" class="btn btn-primary btn-lg">
+        <i class="bi bi-search"></i> Search
+      </button>
     </div>
+  </form>
+
+  <!-- Display Farmer Details (if found) -->
+  {% if farmer %}
+  <div class="card shadow-lg mb-4">
+    <div class="card-body">
+      <h4 class="text-success fw-bold">Farmer Details</h4>
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Farmer ID:</strong> {{ farmer.unique_number }}</p>
+          <p><strong>Name:</strong> {{ farmer.name }}</p>
+          <p><strong>County:</strong> {{ farmer.county }}</p>
+          <p><strong>Subcounty:</strong> {{ farmer.subcounty }}</p>
+          <p><strong>Ward:</strong> {{ farmer.ward }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Location:</strong> {{ farmer.location }}</p>
+          <p><strong>Phone Number:</strong> {{ farmer.phone_number }}</p>
+          <p><strong>Village:</strong> {{ farmer.village }}</p>
+          <p><strong>Land Size (Acres):</strong> {{ farmer.land_size }}</p>
+          <p><strong>Season:</strong> {{ farmer.season }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Fertilizer Type:</strong> {{ farmer.fertilizer_type }}</p>
+          <p><strong>Kgs Issued:</strong> {{ farmer.kgs_issued }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Last Harvest Date:</strong> {{ farmer.last_harvest_date }}</p>
+          <p><strong>Last Payment Date:</strong> {{ farmer.last_payment_date }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Record Harvest Form -->
+  <form method="POST" action="{{ url_for('main.record_harvest') }}" class="shadow-lg p-4 rounded-3">
+    <h4 class="text-secondary mb-3">Harvest Details</h4>
+    <!-- Hidden field carries the farmer's primary key -->
+    <input type="hidden" name="farmer_id" value="{{ farmer.id if farmer else '' }}">
     <div class="mb-3">
       <label for="crop_type" class="form-label">Crop Type</label>
-      <select class="form-control" id="crop_type" name="crop_type" required>
+      <select class="form-control form-select-lg" id="crop_type" name="crop_type" required>
         <option value="Castor">Castor</option>
       </select>
     </div>
     <div class="mb-3">
       <label for="variety" class="form-label">Variety</label>
-      <select class="form-control" id="variety" name="variety" required>
+      <select class="form-control form-select-lg" id="variety" name="variety" required>
         <option value="Tamar">Tamar</option>
         <option value="Kariel">Kariel</option>
         <option value="GCH2">GCH2</option>
@@ -26,15 +76,15 @@
     </div>
     <div class="mb-3">
       <label for="kgs_harvested_clean" class="form-label">Kgs Harvested (Clean)</label>
-      <input type="number" step="0.01" class="form-control" id="kgs_harvested_clean" name="kgs_harvested_clean" required>
+      <input type="number" step="0.01" class="form-control form-control-lg" id="kgs_harvested_clean" name="kgs_harvested_clean" required>
       <small class="form-text text-muted">Price: Ksh 52 per kg</small>
     </div>
     <div class="mb-3">
       <label for="kgs_harvested_husk" class="form-label">Kgs Harvested (Husk)</label>
-      <input type="number" step="0.01" class="form-control" id="kgs_harvested_husk" name="kgs_harvested_husk" required>
+      <input type="number" step="0.01" class="form-control form-control-lg" id="kgs_harvested_husk" name="kgs_harvested_husk" required>
       <small class="form-text text-muted">Price: Ksh 26 per kg</small>
     </div>
-    <button type="submit" class="btn btn-primary">Record Harvest & Proceed to Payment</button>
+    <button type="submit" class="btn btn-success btn-lg">Record Harvest &amp; Proceed to Payment</button>
   </form>
 </div>
 {% endblock %}

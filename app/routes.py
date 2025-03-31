@@ -630,24 +630,30 @@ def plough_default():
     farmers = Farmer.query.all()
     return render_template('plough_default.html', farmers=farmers)
 
-# Route for rendering the harvest form
+
+# Route for rendering the harvest form and recording harvest, then redirecting to payment
 @main_bp.route('/harvest', methods=['GET', 'POST'])
 def record_harvest():
     if request.method == 'POST':
+        # Retrieve the primary key of the farmer from the hidden field
         farmer_id = request.form.get('farmer_id')
+        if not farmer_id:
+            flash("Farmer is not selected. Please search for a farmer first.", "danger")
+            return redirect(url_for('main.record_harvest'))
+
         try:
-            kgs_clean = float(request.form['kgs_harvested_clean'])
-            kgs_husk = float(request.form['kgs_harvested_husk'])
-        except ValueError:
+            kgs_clean = float(request.form.get('kgs_harvested_clean'))
+            kgs_husk = float(request.form.get('kgs_harvested_husk'))
+        except (ValueError, TypeError):
             flash("Invalid harvest weights! Please enter valid numbers for clean and husk weights.", "danger")
             return redirect(url_for('main.record_harvest'))
 
         # Calculate the total payment
         total_payment = (kgs_clean * 52) + (kgs_husk * 26)
 
-        # Save the harvest record into the database (adjust field names if needed)
+        # Save the harvest record into the database
         new_harvest = Harvest(
-            farmer_id=farmer_id,
+            farmer_id=farmer_id,  # farmer_id here is the primary key of the farmer (an integer)
             clean_kgs=kgs_clean,
             husk_kgs=kgs_husk,
             date_recorded=datetime.utcnow()
@@ -656,33 +662,55 @@ def record_harvest():
         db.session.commit()
 
         flash("Harvest recorded successfully!", "success")
-        # Redirect to the payment page with farmer_id and total_payment as query parameters
+        # Automatically redirect to the payment page with relevant query parameters
         return redirect(url_for('main.payment', farmer_id=farmer_id, total_payment=total_payment))
 
-    # For GET requests, render the harvest form
+    # GET: render the harvest form
     return render_template('harvest.html')
 
 
+# Route to fetch farmer details (search using unique_number or phone_number)
+@main_bp.route('/fetch_farmer_details', methods=['POST'])
+def fetch_farmer_details():
+    search_term = request.form.get('search_term')
+    search_type = request.form.get('search_type')
+
+    if search_type == "id":
+        # Look up by unique_number (the display ID you use)
+        farmer = Farmer.query.filter_by(unique_number=search_term).first()
+    elif search_type == "phone":
+        farmer = Farmer.query.filter_by(phone_number=search_term).first()
+    else:
+        farmer = None
+
+    if farmer:
+        # Render the harvest form with the farmer details available
+        return render_template('harvest.html', farmer=farmer)
+    else:
+        flash("No farmer found with the provided details.", "warning")
+        return redirect(url_for('main.record_harvest'))
+
+
+# Route for handling payment processing
 @main_bp.route('/payment', methods=['GET', 'POST'])
 def payment():
     if request.method == 'POST':
-        # Retrieve form data
         farmer_id = request.form.get('farmer_id')
         payment_method = request.form.get('payment_method')
 
-        # Fetch the farmer record using unique_number
-        farmer = Farmer.query.filter_by(unique_number=farmer_id).first()
+        # Look up the farmer by primary key
+        farmer = Farmer.query.get(farmer_id)
         if not farmer:
             flash("Farmer not found!", "danger")
             return redirect(url_for('main.dashboard'))
 
-        # Calculate totals from harvest records
+        # Calculate totals from all harvest records for this farmer
         harvests = Harvest.query.filter_by(farmer_id=farmer_id).all()
         total_clean = sum(h.clean_kgs for h in harvests) if harvests else 0
         total_husk = sum(h.husk_kgs for h in harvests) if harvests else 0
         total_payment = (total_clean * 52) + (total_husk * 26)
 
-        # Record the payment in the Payment table
+        # Record the payment
         new_payment = Payment(
             farmer_id=farmer.id,
             amount_paid=total_payment,
@@ -691,18 +719,18 @@ def payment():
         db.session.add(new_payment)
         db.session.commit()
 
-        # Optionally, update farmer's last_payment_date
+        # Update the farmer's last_payment_date property if needed
         farmer.last_payment_date = new_payment.date_paid
         db.session.commit()
 
-        # Generate a receipt dictionary with only serializable data
+        # Prepare a receipt (store in session or handle accordingly)
         receipt = {
             'receipt_number': f'R{datetime.utcnow().strftime("%Y%m%d%H%M%S")}',
             'date': datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
             'farmer': {
                 'full_name': farmer.full_name,
                 'unique_number': farmer.unique_number,
-                'phone_number': farmer.phone_number
+                'phone_number': farmer.phone_number,
             },
             'total_clean': total_clean,
             'total_husk': total_husk,
@@ -711,25 +739,14 @@ def payment():
         }
 
         flash("Payment processed successfully!", "success")
-        # Redirect to the Farmers page to display updated data and receipt
-        # You might choose to pass the receipt via session or query parameters.
-        # For example, here we'll assume you're storing it in the session:
         session['receipt'] = receipt
         return redirect(url_for('main.farmers'))
 
-    # GET: Render payment form if needed
+    # GET: Render the payment form with query parameters
     farmer_id = request.args.get('farmer_id')
-    total_clean = request.args.get('total_clean', type=float)
-    total_husk = request.args.get('total_husk', type=float)
     total_payment = request.args.get('total_payment', type=float)
-    farmer = Farmer.query.filter_by(unique_number=farmer_id).first() if farmer_id else None
-    return render_template('payment.html', farmer_id=farmer_id,
-                           total_clean=total_clean,
-                           total_husk=total_husk,
-                           total_payment=total_payment,
-                           farmer=farmer)
-
-
+    farmer = Farmer.query.get(farmer_id) if farmer_id else None
+    return render_template('payment.html', farmer_id=farmer_id, total_payment=total_payment, farmer=farmer)
 @main_bp.route('/issue_fertilizer', methods=['GET', 'POST'])
 def issue_fertilizer():
     if request.method == 'POST':

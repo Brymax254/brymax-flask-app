@@ -504,6 +504,181 @@ body {
   max-width: 1200px;
 }
 
+/* Container Styling */
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Section Headers */
+h2, h4 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: #4a90e2;
+}
+
+h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Search Form Styling */
+#search-form {
+  padding: 1.5rem;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.input-group {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.input-group .form-control {
+  border: none;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+}
+
+.input-group .form-control:focus {
+  box-shadow: none;
+  border: 2px solid #4a90e2;
+}
+
+.input-group .btn {
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.input-group .btn:hover {
+  background: linear-gradient(135deg, #2575fc, #6a11cb);
+  transform: scale(1.05);
+}
+
+/* Farmer Details Card */
+.card {
+  border: none;
+  border-radius: 15px;
+  background: #f8f9fc;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-body p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+}
+
+.card-body p strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Record Harvest Form */
+form {
+  padding: 1.5rem;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-control-lg, .form-select-lg {
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control-lg:focus, .form-select-lg:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+/* Buttons */
+.btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2575fc, #6a11cb);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+}
+
+.btn-success {
+  background: #28a745;
+  color: #fff;
+  border: none;
+}
+
+.btn-success:hover {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-control-lg, .form-select-lg {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+  }
+}
+
   </style>
 </head>
 <body>

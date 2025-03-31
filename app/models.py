@@ -130,19 +130,23 @@ class Ploughing(db.Model):
     def __repr__(self):
         return f"<Ploughing {self.date_ploughed}>"
 
+from datetime import datetime
+from app import db
+
 class Harvest(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'), nullable=False)
     clean_kgs = db.Column(db.Float, nullable=False)
     husk_kgs = db.Column(db.Float, nullable=False)
-    date_recorded = db.Column(db.DateTime, default=datetime.utcnow)
+    date_recorded = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     farmer = db.relationship('Farmer', backref='harvests')
 
     def __repr__(self):
         return f"<Harvest {self.clean_kgs} kgs>"
 
+
 class Payment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'), nullable=False)
     amount_paid = db.Column(db.Float, nullable=False)
     date_paid = db.Column(db.DateTime, default=datetime.utcnow)
