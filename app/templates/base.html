@@ -10,126 +10,533 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Animate.css for smooth animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-  <!-- Visualization Dependencies -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-  <!-- Custom Styles -->
   <style>
     :root {
-      --primary-accent: #6366f1;
-      --secondary-accent: #4f46e5;
-      --dark-bg: #0f172a;
-      --light-bg: #f8fafc;
-      --chart-bg: #ffffff;
-      --gradient-light: linear-gradient(135deg, #f8fafc, #e2e8f0);
-    }
+  --primary-accent: #6a11cb;          /* Deep Purple */
+  --secondary-accent: #2575fc;        /* Vibrant Blue */
+  --light-bg: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+  --glass-blur: 10px;
+}
 
-    /* Global Styles */
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--gradient-light);
-      transition: background 0.3s ease, color 0.3s ease;
-      color: #333;
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f4f7fb;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Custom Navbar */
+.custom-navbar {
+  padding: 0.75rem 1.5rem;
+  background: var(--light-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-navbar .navbar-brand {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.custom-navbar .navbar-brand:hover {
+  color: var(--primary-accent);
+}
+
+/* Notification Icon */
+.nav-link {
+  color: #333 !important;
+  position: relative;
+}
+
+.nav-link .badge {
+  font-size: 0.5rem;
+}
+
+/* User Icon (Dropdown Trigger) */
+.user-icon {
+  background: var(--primary-accent);
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.5rem;
+  margin-left: 1rem;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+  background: var(--secondary-accent);
+}
+
+/* Dropdown Menu Customization */
+.custom-dropdown {
+  min-width: 240px;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* When the dropdown is shown, override transform and opacity */
+.dropdown-menu.show.custom-dropdown {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Dropdown Items */
+.custom-dropdown .dropdown-item,
+.custom-dropdown .dropdown-item-text {
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.custom-dropdown .dropdown-item i,
+.custom-dropdown .dropdown-item-text i {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Hover effect on dropdown items */
+.custom-dropdown .dropdown-item:hover {
+  background: var(--secondary-accent);
+  color: #fff;
+}
+
+/* Prevent dropdown menu from overflowing the viewport */
+.dropdown-menu {
+  max-width: 100%;
+}
+
+    /* Dashboard Header Styling */
+    .dashboard-header {
+      background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+      color: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: var(--box-shadow);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+    }
+    .dashboard-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
       margin: 0;
-      padding: 0;
     }
-
-    /* Navbar */
-    .navbar {
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-      padding: 0.8rem 1rem;
-      z-index: 1030;
-      transition: background 0.3s ease;
-    }
-    .navbar-brand {
-      font-weight: 600;
-      font-size: 1.25rem;
-    }
-    .nav-link {
-      font-weight: 500;
-      color: #64748b !important;
-      transition: color 0.2s ease;
-    }
-    .nav-link:hover,
-    .nav-link.active {
-      color: var(--primary-accent) !important;
-      font-weight: 600;
-    }
-
-    /* Content Containers */
-    .full-width-container {
-      padding: 0;
-    }
-    .chart-container {
-      background: var(--chart-bg);
-      border-radius: 0.8rem;
-      padding: 1rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    /* Dark Mode */
-    body.dark-mode {
-      --light-bg: #0f172a;
-      --chart-bg: #1e293b;
-      background: #0f172a;
-      color: #e2e8f0;
-    }
-    body.dark-mode .chart-container {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-    body.dark-mode .table {
-      --bs-table-color: #e2e8f0;
-      --bs-table-bg: #1e293b;
-      --bs-table-border-color: #334155;
+    .dashboard-header p {
+      font-size: 1.2rem;
+      font-weight: 400;
     }
 
     /* Flash Messages */
     .alert {
-      border: none;
-      border-radius: 0.5rem;
-      padding: 1rem 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+      box-shadow: var(--box-shadow);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    .alert i {
+      margin-right: 0.5rem;
     }
 
-    /* User Icon & Dropdown */
-    .user-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+    /* Card Styling */
+    .custom-card {
+      border: none;
+      border-radius: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .custom-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Icon Styling */
+    .icon-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: var(--light-bg);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      margin-bottom: 1rem;
     }
-    .user-icon:hover {
-      background-color: #e9ecef;
-      color: #495057;
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #6c63ff, #3b37f0);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .dropdown-menu {
-      min-width: 12rem;
+
+    .icon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(135deg, #4caf50, #0bab64); /* Unique hover color */
     }
+
+    /* Buttons */
+    .btn {
+      transition: all 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    /* Layout Responsiveness */
+    .row.g-4 {
+      row-gap: 1.5rem; /* Adds spacing between rows */
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: var(--dark-bg);
+      color: #e2e8f0;
+    }
+    body.dark-mode .navbar {
+      background: #1f2937;
+      box-shadow: var(--box-shadow);
+    }
+    body.dark-mode .dashboard-header {
+      background: linear-gradient(135deg, #2a3747, #495057);
+    }
+    body.dark-mode .custom-card {
+      background: var(--dark-card-bg);
+
+    }
+
+    /* Sidebar Card Styling */
+.sidebar-card {
+  background: var(--card-bg, #ffffff);
+  border: none;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Header Styling */
+.sidebar-card h5 {
+  border-bottom: 2px solid var(--primary-accent, #4a90e2);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Navigation Links */
+.nav-link {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #6c757d;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.nav-link i {
+  font-size: 1.2rem;
+  color: var(--primary-accent, #4a90e2);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary-accent, #4a90e2);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav-link:hover i {
+  transform: translateX(5px);
+  color: var(--secondary-accent, #50bfa0);
+}
+
+/* Button Styling */
+.btn-gradient {
+  background: linear-gradient(135deg, var(--primary-accent, #4a90e2), var(--secondary-accent, #50bfa0));
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, var(--secondary-accent, #50bfa0), var(--primary-accent, #4a90e2));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+/* Sidebar Card Styling */
+.sidebar-card {
+  background: var(--card-bg, #ffffff);
+  border: none;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Header Styling */
+.sidebar-card h6 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Typography for Statistics */
+.card-text {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.card-text.text-muted {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Icon Styling */
+.sidebar-card h6 i {
+  font-size: 1.4rem;
+  color: var(--primary-accent, #4a90e2);
+}
+
+.sidebar-card:hover h6 i {
+  color: var(--secondary-accent, #50bfa0);
+  transform: scale(1.1);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+/* General Card Styling */
+.custom-card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Card Header Styling */
+.card-header {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.card-header .btn-sm {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.card-header h6 {
+  margin-bottom: 0;
+  max-width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Form Styling */
+.form-select,
+.form-control {
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.btn-lg {
+  font-size: 1.2rem;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+}
+
+.btn-lg:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+/* Base Variables & Global Styles */
+:root {
+  --primary-accent: #6a11cb;       /* A deep purple */
+  --secondary-accent: #2575fc;     /* A vibrant blue */
+  --upload-gradient-start: #ff416c;
+  --upload-gradient-end: #ff4b2b;
+  --light-bg: rgba(255, 255, 255, 0.85);
+  --glass-blur: 10px;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f4f7fb;
+  margin: 0;
+  padding: 0;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Modern Card (Glassmorphism Style) */
+.admin-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  background: var(--light-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Header Styles */
+.admin-header {
+  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+  padding: 1.25rem;
+  color: #fff;
+}
+.admin-header h5 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.upload-header {
+  background: linear-gradient(135deg, var(--upload-gradient-start), var(--upload-gradient-end));
+  padding: 1.25rem;
+  color: #fff;
+}
+.upload-header h5 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1rem;
+}
+.form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+.form-select,
+.form-control {
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-select:focus,
+.form-control:focus {
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+}
+
+/* Post Update Button */
+.btn-update {
+  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+  color: #fff;
+  border: none;
+}
+.btn-update:hover {
+  background: linear-gradient(135deg, var(--secondary-accent), var(--primary-accent));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Upload Files Button */
+.btn-upload {
+  background: linear-gradient(135deg, var(--upload-gradient-start), var(--upload-gradient-end));
+  color: #fff;
+  border: none;
+}
+.btn-upload:hover {
+  background: linear-gradient(135deg, var(--upload-gradient-end), var(--upload-gradient-start));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Card Body */
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Container Max-width */
+.container {
+  max-width: 1200px;
+}
+
   </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top animate__animated animate__fadeInDown">
-    <div class="container-fluid">
-      <!-- Left Side: User Icon with Dropdown -->
+<!-- Navbar -->
+<nav class="navbar custom-navbar sticky-top shadow-lg">
+  <div class="container-fluid">
+    <!-- Brand Logo -->
+    <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
+      <i class="bi bi-speedometer2 me-2"></i> Brymax 3D
+    </a>
+    
+      <!-- User Profile Dropdown -->
       <div class="dropdown">
-        <a class="d-flex align-items-center user-icon dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="User Profile">
+        <a class="user-icon dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="bi bi-person-circle fs-4"></i>
         </a>
-        <ul class="dropdown-menu" aria-labelledby="userDropdown">
-          <li><span class="dropdown-item-text">Hello, {{ current_user.username }}</span></li>
-          <li><span class="dropdown-item-text">Today: <span id="currentDate"></span></span></li>
+        <ul class="dropdown-menu dropdown-menu-end custom-dropdown shadow-lg animate__animated animate__fadeIn" aria-labelledby="userDropdown">
+          <li>
+            <span class="dropdown-item-text fw-bold">
+              <i class="bi bi-person-lines-fill me-1"></i> Hello, {{ current_user.username }}
+            </span>
+          </li>
+          <li>
+            <span class="dropdown-item-text">
+              <i class="bi bi-calendar3 me-1"></i> Today: <span id="currentDate"></span>
+            </span>
+          </li>
           <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item" href="{{ url_for('main.profile') }}">
+              <i class="bi bi-person-workspace me-1"></i> Profile
+            </a>
+          </li>
           <li>
             <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
               <i class="bi bi-box-arrow-right me-1"></i> Logout
@@ -137,57 +544,58 @@
           </li>
         </ul>
       </div>
+    </div>
+  </div>
+</nav>
+
 
       <!-- Brand -->
-      <a class="navbar-brand fw-bold text-primary ms-3" href="{{ url_for('main.dashboard') }}">
+      <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">
         <i class="bi bi-cube me-2"></i>Brymax 3D
       </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-        <span class="navbar-toggler-icon"></span>
+      <!-- Collapsible Menu -->
+      <button class="navbar-toggler border-0 text-light" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="bi bi-list fs-3"></i>
       </button>
-
-      <!-- Right Navigation -->
       <div class="collapse navbar-collapse" id="mainNav">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <!-- Additional navigation links can be placed here -->
+        <!-- Navigation Links -->
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.visualize') }}">
+              <i class="bi bi-bar-chart-line me-1"></i> Visualize Data
+            </a>
+          </li>
         </ul>
-        <button class="btn btn-sm btn-outline-secondary ms-3" id="darkModeToggle">
-          <i class="bi bi-moon-stars"></i>
+        <button class="btn btn-outline-light ms-3" id="darkModeToggle">
+          <i class="bi bi-moon-stars"></i> Dark Mode
         </button>
       </div>
     </div>
   </nav>
-
-  <!-- Main Content -->
-  <main class="container-fluid full-width-container py-4">
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="container mb-4">
+        <div class="container mt-4">
           {% for category, message in messages %}
-            <div class="alert alert-{{ category }} d-flex align-items-center animate__animated animate__fadeIn">
-              <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>
-              <div>{{ message }}</div>
+            <div class="alert alert-{{ category }}">
+              <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }}"></i>
+              {{ message }}
             </div>
           {% endfor %}
         </div>
       {% endif %}
     {% endwith %}
 
-    <!-- Content Block -->
-    {% block content %}{% endblock %}
+    <!-- Page-Specific Content -->
+    {% block content %}
+    {% endblock %}
   </main>
 
-  <!-- Core Scripts -->
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-
-  <!-- Theme Manager & Custom Scripts -->
   <script>
-    // Theme Manager for toggling dark & light modes
     const themeManager = {
       init() {
         this.toggle = document.getElementById('darkModeToggle');
@@ -197,77 +605,24 @@
       loadTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.body.classList.toggle('dark-mode', savedTheme === 'dark');
-        this.updateThemeIcon(savedTheme);
-      },
-      updateThemeIcon(theme) {
-        this.toggle.innerHTML = theme === 'dark'
-          ? '<i class="bi bi-sun"></i>'
-          : '<i class="bi bi-moon-stars"></i>';
       },
       bindEvents() {
         this.toggle.addEventListener('click', () => {
           const isDark = document.body.classList.toggle('dark-mode');
           localStorage.setItem('theme', isDark ? 'dark' : 'light');
-          this.updateThemeIcon(isDark ? 'dark' : 'light');
         });
       }
     };
 
     document.addEventListener('DOMContentLoaded', () => themeManager.init());
 
-    // Date Range Picker Setup
-    $('.date-range-picker').daterangepicker({
-      opens: 'left',
-      autoUpdateInput: false,
-      locale: {
-        format: 'YYYY-MM-DD',
-        cancelLabel: 'Clear'
-      }
-    });
-
-    $('.date-range-picker').on('apply.daterangepicker', function(ev, picker) {
-      $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-    });
-
-    $('.date-range-picker').on('cancel.daterangepicker', function(ev, picker) {
-      $(this).val('');
-    });
-
-    // Set current date in user dropdown
-    document.addEventListener("DOMContentLoaded", function() {
+    // Set current date in dropdown
+    document.addEventListener("DOMContentLoaded", () => {
       const currentDateEl = document.getElementById("currentDate");
-      if(currentDateEl) {
+      if (currentDateEl) {
         currentDateEl.textContent = new Date().toLocaleDateString();
       }
     });
   </script>
-
-  <script>
-    // CSRF Token handling for forms
-    document.addEventListener("DOMContentLoaded", function () {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-      document.addEventListener("submit", function (event) {
-        if (event.target.tagName === "FORM") {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = "csrf_token";
-          input.value = csrfToken;
-          event.target.appendChild(input);
-        }
-      });
-      fetchCSRFToken(csrfToken);
-    });
-
-    function fetchCSRFToken(token) {
-      fetch("/", {
-        method: "GET",
-        headers: {
-          "X-CSRFToken": token
-        }
-      });
-    }
-  </script>
-
-  {% block scripts %}{% endblock %}
 </body>
 </html>

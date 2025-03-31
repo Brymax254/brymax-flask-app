@@ -630,24 +630,6 @@ def plough_default():
     farmers = Farmer.query.all()
     return render_template('plough_default.html', farmers=farmers)
 
-
-# Route for recording a harvest for a specific farmer
-@main_bp.route('/harvest/<farmer_id>', methods=['POST'])
-def record_specific_harvest(farmer_id):
-    try:
-        clean_kgs = float(request.form['clean_kgs'])
-        husk_kgs = float(request.form['husk_kgs'])
-    except ValueError:
-        flash("Invalid harvest weight! Please enter valid numbers.", "danger")
-        return redirect(url_for('main.fetch_farmer', farmer_id=farmer_id))
-
-    harvest = Harvest(farmer_id=farmer_id, clean_kgs=clean_kgs, husk_kgs=husk_kgs, date_recorded=datetime.utcnow())
-    db.session.add(harvest)
-    db.session.commit()
-    flash("Harvest recorded successfully!", "success")
-    return redirect(url_for('main.fetch_farmer', farmer_id=farmer_id))
-
-
 # Route for rendering the harvest form
 @main_bp.route('/harvest', methods=['GET', 'POST'])
 def record_harvest():
