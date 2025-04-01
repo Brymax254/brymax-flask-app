@@ -88,6 +88,7 @@ class Report(db.Model):
     def __repr__(self):
         return f"<Report {self.id} - {self.officer_name}>"
 
+
 class Farmer(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     unique_number = db.Column(db.String(20), unique=True, nullable=False)
@@ -108,9 +109,13 @@ class Farmer(db.Model):
     kgs_harvested_husk = db.Column(db.Float, nullable=True)
     amount_received = db.Column(db.Float, nullable=True)
 
+    # New fields
+    last_harvest_date = db.Column(db.DateTime, nullable=True)
+    last_payment_date = db.Column(db.DateTime, nullable=True)
+    field_officer = db.Column(db.String(100), nullable=True)
+
     def __repr__(self):
         return f"<Farmer {self.full_name} - {self.phone_number}>"
-
 class InputDistribution(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'), nullable=False)
@@ -149,7 +154,7 @@ class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'), nullable=False)
     amount_paid = db.Column(db.Float, nullable=False)
-    date_paid = db.Column(db.DateTime, default=datetime.utcnow)
+    date_paid = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     farmer = db.relationship('Farmer', backref='payments')
 
     def __repr__(self):

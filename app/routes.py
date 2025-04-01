@@ -3,7 +3,7 @@ import requests
 from flask import render_template, current_app, send_file, flash, redirect, session, url_for, jsonify, request, make_response, Blueprint, send_from_directory
 from datetime import datetime, date
 import logging
-from io import StringIO
+from io import StringIO, BytesIO
 import plotly.express as px
 from pdfkit import pdfkit
 from app.models import Report, DailyReport, Update, Employee, Payroll, User, Payroll, Goal, Course, Attendance, Farmer, InputDistribution, Ploughing, Harvest, Payment, Seed, Pesticide, Manure
@@ -1211,6 +1211,91 @@ def post_update():
         flash("Failed to post update. Please provide valid content.", "danger")
 
     return redirect(url_for('main.dashboard'))
+
+@main_bp.route('/export_farmers_excel')
+def export_farmers_excel():
+    farmers = Farmer.query.all()
+
+    # Create DataFrame
+    data = [{
+        "Farmer ID": farmer.unique_number,
+        "Name": farmer.full_name,
+        "County": farmer.county,
+        "Subcounty": farmer.subcounty,
+        "Ward": farmer.ward,
+        "Location": farmer.location,
+        "Phone Number": farmer.phone_number,
+        "Village": farmer.village,
+        "Land Size (acres)": farmer.land_size,
+        "Season": farmer.season,
+        "Fertilizer Type": farmer.fertilizer_type or "N/A",
+        "Kgs Issued": farmer.kgs_issued or "N/A",
+        "Kgs Harvested (Clean)": farmer.kgs_harvested_clean or "N/A",
+        "Kgs Harvested (Husk)": farmer.kgs_harvested_husk or "N/A",
+        "Amount Received": farmer.amount_received or "N/A",
+        "Last Harvest Date": farmer.last_harvest_date.strftime("%Y-%m-%d") if farmer.last_harvest_date else "N/A",
+        "Last Payment Date": farmer.last_payment_date.strftime("%Y-%m-%d") if farmer.last_payment_date else "N/A",
+        "Field Officer": farmer.field_officer
+    } for farmer in farmers]
+
+    df = pd.DataFrame(data)
+
+    # Highlight phone numbers with less than 10 digits or more than 13 digits
+    def highlight_contact(val):
+        return "background-color: yellow" if len(str(val)) < 10 or len(str(val)) > 13 else ""
+
+    df.style.applymap(highlight_contact, subset=["Phone Number"])
+
+    # Save to Excel with formatting
+    excel_file = BytesIO()
+    writer = pd.ExcelWriter(excel_file, engine="openpyxl")
+    df.to_excel(writer, sheet_name="Farmers", index=False)
+
+    # Format column widths
+    worksheet = writer.sheets["Farmers"]
+    for col_idx, col_name in enumerate(df.columns, 1):
+        worksheet.column_dimensions[worksheet.cell(row=1, column=col_idx).column_letter].width = 18
+
+    writer.close()
+
+    # Send file for download
+    excel_file.seek(0)
+    return send_file(excel_file, download_name="Farmers_Report.xlsx", as_attachment=True)
+
+@main_bp.route('/delete_farmers', methods=['POST'])
+def delete_farmers():
+    data = request.json
+    farmer_ids = data.get("farmer_ids")
+
+    if not farmer_ids:
+        return jsonify({"error": "No farmers selected"}), 400
+
+    farmers_to_delete = Farmer.query.filter(Farmer.unique_number.in_(farmer_ids)).all()
+
+    if not farmers_to_delete:
+        return jsonify({"error": "No matching farmers found"}), 404
+
+    for farmer in farmers_to_delete:
+        db.session.delete(farmer)
+
+    db.session.commit()
+    return jsonify({"message": f"{len(farmers_to_delete)} farmers deleted successfully"}), 200
+
+
+@main_bp.route('/farmers/<season>')
+def filter_farmers(season):
+    valid_seasons = ["OND", "MAM"]
+    if season not in valid_seasons:
+        return jsonify({"error": "Invalid season filter"}), 400
+
+    farmers = Farmer.query.filter_by(season=season).all()
+
+    return jsonify([{
+        "Farmer ID": farmer.unique_number,
+        "Name": farmer.full_name,
+        "Season": farmer.season
+    } for farmer in farmers])
+
 
 if __name__ == '__main__':
     app.run(debug=True)
