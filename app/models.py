@@ -109,7 +109,7 @@ class Farmer(db.Model):
     kgs_harvested_husk = db.Column(db.Float, nullable=True)
     amount_received = db.Column(db.Float, nullable=True)
 
-    # New fields
+    # Newly added fields:
     last_harvest_date = db.Column(db.DateTime, nullable=True)
     last_payment_date = db.Column(db.DateTime, nullable=True)
     field_officer = db.Column(db.String(100), nullable=True)
