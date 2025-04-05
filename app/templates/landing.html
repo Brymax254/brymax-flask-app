@@ -307,6 +307,11 @@
     .modal-content button[type="submit"]:hover {
       background: var(--accent-color);
     }
+.logo img {
+  max-width: 150px; /* Adjust as needed */
+  height: auto;
+  display: block;
+}
 
     /* ===== Responsive Adjustments ===== */
     @media (max-width: 600px) {
@@ -328,6 +333,11 @@
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar">
+    <div class="logo">
+    <a href="#">
+      <img src="app/uploads/logo.png" alt="BRYMAX TECH LIMITED Logo">
+    </a>
+  </div>
     <div class="brand">BRYMAX TECH LIMITED</div>
     <div class="nav-buttons">
       <button class="about-btn" onclick="location.href='#about'">
