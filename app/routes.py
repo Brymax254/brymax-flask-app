@@ -60,9 +60,8 @@ def login():
 @auth_bp.route('/logout')
 @login_required
 def logout():
-    logout_user()
-    flash('You have been logged out successfully!', 'success')
-    return redirect(url_for('auth.login'))
+    session.clear()  # Clears session data
+    return redirect(url_for("main.index"))  # Correct redirect to landing page
 
 @main_bp.route('/api/reports', methods=['GET'])
 def fetch_reports():

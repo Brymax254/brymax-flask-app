@@ -5,238 +5,290 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BRYMAX TECH LIMITED - Empowering Global Business</title>
 
-  <!-- Font Awesome for icons -->
+  <!-- Favicon -->
+ <link rel="icon" type="image/png" href="/static/logo.png">
+  <!-- External Styles & Fonts -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <!-- Animate.css for animations -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 
+  <!-- Custom Styles -->
   <style>
-    /* ===== CSS Variables & Global Reset ===== */
-    :root {
-      --primary-color: #004d99;
-      --secondary-color: #FFD700;
-      --accent-color: #0080ff;
-      --light-bg: #f7f7f7;
-      --white: #fff;
-      --gray-bg: #f1f1f1;
-      --text-color: #222;
-      --text-secondary: #444;
-    }
+   /* ===== CSS Variables & Global Reset ===== */
+:root {
+  --primary-color: #004d99;
+  --secondary-color: #FFD700;
+  --accent-color: #0080ff;
+  --light-bg: #f7f7f7;
+  --white: #fff;
+  --gray-bg: #f1f1f1;
+  --text-color: #222;
+  --text-secondary: #444;
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      color: var(--text-color);
-      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-      animation: gradientShift 12s infinite alternate ease-in-out;
-    }
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  animation: gradientShift 12s infinite alternate ease-in-out;
+}
 
-    @keyframes gradientShift {
-      0% { background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); }
-      50% { background: linear-gradient(135deg, #003366, #00aaff); }
-      100% { background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); }
-    }
+@keyframes gradientShift {
+  0% { background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); }
+  50% { background: linear-gradient(135deg, #003366, #00aaff); }
+  100% { background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); }
+}
 
-    /* ===== Fade In Animation ===== */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s ease-out, transform 1s ease-out;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+/* Simple fade-in effect for elements (if needed) */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-    /* ===== Navigation Bar ===== */
-    nav.navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: url('https://assets.datamation.com/uploads/2021/02/storage.png') center/cover no-repeat;
-      color: var(--white);
-      padding: 1rem 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      backdrop-filter: blur(6px);
-      border-bottom: 2px solid rgba(255, 215, 0, 0.6);
-    }
-    nav.navbar .brand {
-      font-size: 2rem;
-      font-weight: bold;
-      color: rgba(255, 255, 255, 0.9);
-      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
-    }
+/* ===== Navigation Bar ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: url('https://assets.datamation.com/uploads/2021/02/storage.png') center/cover no-repeat;
+  backdrop-filter: blur(6px);
+  border-bottom: 2px solid rgba(255, 215, 0, 0.6);
+}
 
-    /* ===== Navigation Buttons (Single Row) ===== */
-    .nav-buttons {
-      display: flex;
-      gap: 1rem;
-    }
-    .nav-buttons button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-    /* Each button has its own color */
-    .about-btn    { background: #1976d2; color: white; }
-    .features-btn { background: #ff9800; color: white; }
-    .faq-btn      { background: #4caf50; color: white; }
-    .contact-btn  { background: #9c27b0; color: white; }
-    .login-btn    { background: #f44336; color: white; }
+.nav-left {
+  display: flex;
+  align-items: center;
+}
 
-    .nav-buttons button:hover {
-      transform: scale(1.05);
-      opacity: 0.9;
-    }
+.logo img {
+  width: 120px;
+  height: auto;
+  border-radius: 5px;
+  object-fit: contain;
+  margin-right: 10px;
+}
 
-    /* ===== Hero Section ===== */
-    header.content {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: linear-gradient(135deg, rgba(13, 71, 161, 0.8), rgba(25, 118, 210, 0.8)),
-                  url('https://assets.datamation.com/uploads/2021/02/storage.png') center/cover no-repeat;
-      color: #fff;
-      min-height: 60vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      backdrop-filter: blur(5px);
-      background-attachment: fixed;
-      animation: fadeInUp 1s ease-out;
-    }
-    header.content h1 {
-      font-size: 2.75rem;
-      margin-bottom: 1rem;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-    }
+.brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--white);
+}
 
-    /* ===== Main Sections ===== */
-    main section {
-      padding: 3rem 2rem;
-      max-width: 1200px;
-      margin: 0 auto 1rem;
-      text-align: center;
-      background: var(--white);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-    main section h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: var(--primary-color);
-    }
-    main section p {
-      font-size: 1rem;
-      color: var(--text-secondary);
-      max-width: 800px;
-      margin: 0 auto;
-    }
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+}
 
-    /* ===== Features Section ===== */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    .feature-card {
-      background: var(--white);
-      padding: 1.75rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    }
-    .feature-card i {
-      font-size: 2.5rem;
-      color: var(--primary-color);
-      margin-bottom: 1rem;
-    }
-    .feature-card h3 {
-      margin-bottom: 0.5rem;
-      font-size: 1.5rem;
-    }
-    .feature-card p {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-    }
+.nav-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
 
-    /* ===== Contact Section ===== */
-    .contact-details {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      margin-top: 2rem;
-      gap: 1rem;
-    }
-    .contact-card {
-      background: var(--gray-bg);
-      padding: 1.5rem;
-      border-radius: 8px;
-      flex: 1 1 220px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-      text-align: center;
-    }
-    .contact-card:hover {
-      transform: translateY(-3px);
-    }
-    .contact-card h3 {
-      margin-bottom: 0.5rem;
-      color: var(--primary-color);
-      font-size: 1.25rem;
-    }
-    .contact-card p a {
-      color: var(--primary-color);
-      font-weight: bold;
-      transition: color 0.3s;
-    }
-    .contact-card p a:hover {
-      color: var(--accent-color);
-    }
-    .icon-wrapper {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1rem;
-    }
-    .icon-wrapper i {
-      font-size: 1.75rem;
-      color: var(--white);
-    }
+.about-btn    { background: #1976d2; color: var(--white); }
+.features-btn { background: #ff9800; color: var(--white); }
+.faq-btn      { background: #4caf50; color: var(--white); }
+.contact-btn  { background: #9c27b0; color: var(--white); }
+.login-btn    { background: #f44336; color: var(--white); }
 
-    /* ===== Footer ===== */
-    footer.footer {
-      background: var(--primary-color);
-      color: var(--white);
-      text-align: center;
-      padding: 1.5rem 2rem;
-      font-size: 0.9rem;
-    }
+.nav-buttons button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
 
-    /* ===== Modal Styles ===== */
+/* ===== Hero Section ===== */
+header.content {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(13,71,161,0.85), rgba(25,118,210,0.85)),
+              url('https://assets.datamation.com/uploads/2021/02/storage.png') center/cover no-repeat;
+  color: var(--white);
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  background-attachment: fixed;
+  animation: fadeInUp 1s ease-out;
+}
+header.content h1 {
+  font-size: 2.75rem;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* ===== Main Sections ===== */
+main section {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  text-align: center;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+main section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+main section p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ===== Features Section ===== */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.feature-card {
+  background: var(--white);
+  padding: 1.75rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+.feature-card .icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feature-card .icon-wrapper i {
+  font-size: 2.5rem;
+  color: var(--white);
+}
+.feature-card h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: #333;
+}
+.feature-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+/* Assign icon background colors based on card order */
+.features .feature-card:nth-child(1) .icon-wrapper { background: #1976d2; }
+.features .feature-card:nth-child(2) .icon-wrapper { background: #ff9800; }
+.features .feature-card:nth-child(3) .icon-wrapper { background: #4caf50; }
+.features .feature-card:nth-child(4) .icon-wrapper { background: #9c27b0; }
+
+/* ===== About & FAQ Blocks ===== */
+.block {
+  background: var(--white);
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.block h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+.block p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== Contact Section ===== */
+.contact-details {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+.contact-card {
+  background: var(--gray-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  flex: 1 1 220px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+.contact-card:hover {
+  transform: translateY(-3px);
+}
+.contact-card h3 {
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+  font-size: 1.25rem;
+}
+.contact-card p a {
+  color: var(--primary-color);
+  font-weight: bold;
+  transition: color 0.3s;
+}
+.contact-card p a:hover {
+  color: var(--accent-color);
+}
+.contact-card .icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+.contact-card .icon-wrapper i {
+  font-size: 1.75rem;
+  color: var(--white);
+}
+/* Color assignments for contact icons */
+.contact-details .contact-card:nth-child(1) .icon-wrapper { background: #1976d2; }
+.contact-details .contact-card:nth-child(2) .icon-wrapper { background: #ff9800; }
+.contact-details .contact-card:nth-child(3) .icon-wrapper { background: #4caf50; }
+.contact-details .contact-card:nth-child(4) .icon-wrapper { background: #9c27b0; }
+
+/* ===== Footer ===== */
+footer.footer {
+  background: var(--primary-color);
+  color: var(--white);
+  text-align: center;
+  padding: 1.5rem 2rem;
+  font-size: 0.9rem;
+}
+ /* Login Modal */
     .modal {
       display: none;
       position: fixed;
@@ -244,37 +296,29 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0,0,0,0.5);
       justify-content: center;
       align-items: center;
-      z-index: 2000;
-      animation: fadeInModal 0.6s ease-in-out;
-    }
-    @keyframes fadeInModal {
-      0% { opacity: 0; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1); }
+      z-index: 1000;
     }
     .modal-content {
-      background: var(--white);
-      width: 90%;
-      max-width: 400px;
+      background: #fff;
       padding: 2rem;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      width: 90%;
       position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     .close-btn {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.75rem;
-      background: transparent;
+      background: none;
       border: none;
       font-size: 1.5rem;
+      position: absolute;
+      top: 10px;
+      right: 10px;
       cursor: pointer;
-      color: var(--text-color);
-    }
-    .modal-content h2 {
-      margin-bottom: 1.5rem;
+      color: #333;
     }
     .form-group {
       margin-bottom: 1rem;
@@ -282,81 +326,64 @@
     }
     .form-group label {
       display: block;
-      margin-bottom: 0.5rem;
-      color: var(--text-color);
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: #444;
     }
     .form-group input {
       width: 100%;
       padding: 0.5rem;
+      font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-size: 1rem;
     }
     .modal-content button[type="submit"] {
-      margin-top: 1rem;
-      width: 100%;
-      padding: 0.75rem;
-      background: var(--primary-color);
-      color: var(--white);
+      background-color: #002146;
+      color: #fff;
       border: none;
-      border-radius: 4px;
+      padding: 0.75rem 1.5rem;
       font-size: 1rem;
+      border-radius: 4px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      margin-top: 1rem;
     }
     .modal-content button[type="submit"]:hover {
-      background: var(--accent-color);
-    }
-.logo img {
-  max-width: 150px; /* Adjust as needed */
-  height: auto;
-  display: block;
-}
-
-    /* ===== Responsive Adjustments ===== */
-    @media (max-width: 600px) {
-      header.content h1 {
-        font-size: 2.25rem;
-      }
-      nav.navbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .nav-buttons {
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 0.5rem;
-      }
+      background-color: #0080ff;
     }
   </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <nav class="navbar">
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="nav-left">
     <div class="logo">
-    <a href="#">
-      <img src="app/uploads/logo.png" alt="BRYMAX TECH LIMITED Logo">
-    </a>
-  </div>
-    <div class="brand">BRYMAX TECH LIMITED</div>
-    <div class="nav-buttons">
-      <button class="about-btn" onclick="location.href='#about'">
-        <i class="fas fa-info-circle"></i> About
-      </button>
-      <button class="features-btn" onclick="location.href='#features'">
-        <i class="fas fa-cogs"></i> Features
-      </button>
-      <button class="faq-btn" onclick="location.href='#faq'">
-        <i class="fas fa-question-circle"></i> FAQ
-      </button>
-      <button class="contact-btn" onclick="location.href='#contact'">
-        <i class="fas fa-envelope"></i> Contact
-      </button>
-      <button class="login-btn" onclick="document.getElementById('loginModal').style.display='flex'">
-        <i class="fas fa-user"></i> Login
-      </button>
+      <a href="#">
+        <img src="https://media-hosting.imagekit.io/6ddec53404674a28/logo.png?Expires=1838463621&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=GEsN~C3yUd3UreKSwF1Oa1eny~mN6i9YwgQk2UO2sZAYItyEHCE4d0qNGRHc0Y~rUIhv~7Pp~5WGxDROZQ8y1BDRVYHjWqahTNFFgZTT9o~ENqisguqw530oYjSzQkWdkbJlheI9yVLBXmqAVTVC4SD3qXcv6Lee7eaDAQKRLA4GjQSSR6AiYOmGPVNmvqp2nTAm3lyVA4jkmLNUPY7iKr73xQMG2duZNOuxkqqgTBUHx1dpXTFfgpkVtomYRy0OOhfzPxkksu7dSJjgv4bkAMzmNmSiS3yi~JvIm5wrIT2KPRA1OQMaRjpJ8oTcrF8obg5E2x8fYUAZ4GiCZcHiAQ__" alt="BRYMAX TECH LIMITED Logo">
+      </a>
     </div>
-  </nav>
+    <div class="brand">BRYMAX TECH LIMITED</div>
+  </div>
+  <div class="nav-buttons">
+    <button class="about-btn" onclick="location.href='#about'">
+      <i class="fas fa-info-circle"></i> About
+    </button>
+    <button class="features-btn" onclick="location.href='#features'">
+      <i class="fas fa-cogs"></i> Features
+    </button>
+    <button class="faq-btn" onclick="location.href='#faq'">
+      <i class="fas fa-question-circle"></i> FAQ
+    </button>
+    <button class="contact-btn" onclick="location.href='#contact'">
+      <i class="fas fa-envelope"></i> Contact
+    </button>
+    <button class="login-btn" onclick="document.getElementById('loginModal').style.display='flex'">
+      <i class="fas fa-user"></i> Login
+    </button>
+  </div>
+</nav>
 
   <!-- Hero Section -->
   <header class="content animate__animated animate__fadeIn">
@@ -367,47 +394,59 @@
   </header>
 
   <main>
-    <!-- Features Section -->
-    <section id="features" class="animate__animated animate__fadeInUp">
-      <div class="features">
-        <div class="feature-card">
-          <i class="fas fa-database"></i>
-          <h3>Robust Data Management</h3>
-          <p>Store, manage, and analyze your data securely and efficiently.</p>
-        </div>
-        <div class="feature-card">
-          <i class="fas fa-chart-line"></i>
-          <h3>Advanced Analytics</h3>
-          <p>Gain actionable insights with real-time dashboards and reports.</p>
-        </div>
-        <div class="feature-card">
-          <i class="fas fa-users"></i>
-          <h3>Global Collaboration</h3>
-          <p>Connect with teams worldwide and streamline your workflow.</p>
-        </div>
-        <div class="feature-card">
-          <i class="fas fa-cloud-upload-alt"></i>
-          <h3>Secure File Storage</h3>
-          <p>Access and share your documents securely from anywhere.</p>
-        </div>
+  <!-- Features Section -->
+<section id="features" class="animate__animated animate__fadeInUp">
+  <div class="features">
+    <div class="feature-card">
+      <div class="icon-wrapper">
+        <i class="fas fa-database"></i>
       </div>
-    </section>
+      <h3>Robust Data Management</h3>
+      <p>Store, manage, and analyze your data securely and efficiently.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon-wrapper">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3>Advanced Analytics</h3>
+      <p>Gain actionable insights with real-time dashboards and reports.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon-wrapper">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3>Global Collaboration</h3>
+      <p>Connect with teams worldwide and streamline your workflow.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon-wrapper">
+        <i class="fas fa-cloud-upload-alt"></i>
+      </div>
+      <h3>Secure File Storage</h3>
+      <p>Access and share your documents securely from anywhere.</p>
+    </div>
+  </div>
+</section>
 
-    <!-- About Section -->
-    <section id="about" class="animate__animated animate__fadeInUp">
-      <h2>About BRYMAX TECH LIMITED</h2>
-      <p>
-        BRYMAX TECH LIMITED delivers cutting‐edge technology solutions to empower your business. Our platform is designed to scale with your growing enterprise and adapt to evolving market needs.
-      </p>
-    </section>
+  <!-- About Block -->
+      <div class="block about-block">
+        <h2>About BRYMAX TECH LIMITED</h2>
+        <p>
+          BRYMAX TECH LIMITED delivers cutting‐edge technology solutions to empower your business.
+          Our platform is designed to scale with your growing enterprise and adapt to evolving market needs.
+        </p>
+      </div>
+      <!-- FAQ Block -->
+      <div class="block faq-block">
+        <h2>Frequently Asked Questions</h2>
+        <p>
+          Discover more about our platform, its features, and how it can transform your business operations.
+        </p>
+      </div>
+    </div>
+  </section>
 
-    <!-- FAQ Section -->
-    <section id="faq" class="animate__animated animate__fadeInUp">
-      <h2>Frequently Asked Questions</h2>
-      <p>
-        Discover more about our platform, its features, and how it can transform your business operations.
-      </p>
-    </section>
+
 
     <!-- Contact Section -->
     <section id="contact" class="animate__animated animate__fadeInUp">
