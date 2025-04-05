@@ -86,10 +86,10 @@ CREATE TABLE IF NOT EXISTS harvest (
 # ============================
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS payment (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Fixed for SQLite auto-increment
     farmer_id INTEGER NOT NULL,
-    amount_paid FLOAT NOT NULL,
-    date_paid DATE NOT NULL,
+    amount_paid REAL NOT NULL,  -- Using REAL instead of FLOAT for better precision
+    date_paid TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Ensures accurate date-time storage
     FOREIGN KEY (farmer_id) REFERENCES farmer (id) ON DELETE CASCADE
 )
 ''')

@@ -7,11 +7,11 @@
   <form method="POST" action="{{ url_for('main.fetch_farmer_details') }}" id="search-form" class="mb-5 shadow-lg p-4 rounded-3">
     <h4 class="text-secondary mb-3">Search Farmer</h4>
     <div class="input-group">
-      <select class="form-select form-select-lg" id="search_type" name="search_type" required>
+      <select class="form-select form-select-lg" id="search_type" name="search_type" required onchange="updatePlaceholder()">
         <option value="id">Search by Farmer ID</option>
         <option value="phone">Search by Phone Number</option>
       </select>
-      <input type="text" class="form-control form-control-lg" id="search_term" name="search_term" placeholder="Enter Farmer ID or Phone Number" required>
+      <input type="text" class="form-control form-control-lg" id="search_term" name="search_term" placeholder="Enter Farmer ID" required aria-label="Search input">
       <button type="submit" class="btn btn-primary btn-lg">
         <i class="bi bi-search"></i> Search
       </button>
@@ -26,7 +26,7 @@
       <div class="row">
         <div class="col-md-6">
           <p><strong>Farmer ID:</strong> {{ farmer.unique_number }}</p>
-          <p><strong>Name:</strong> {{ farmer.name }}</p>
+          <p><strong>Name:</strong> {{ farmer.full_name }}</p>
           <p><strong>County:</strong> {{ farmer.county }}</p>
           <p><strong>Subcounty:</strong> {{ farmer.subcounty }}</p>
           <p><strong>Ward:</strong> {{ farmer.ward }}</p>
@@ -56,35 +56,46 @@
   <!-- Record Harvest Form -->
   <form method="POST" action="{{ url_for('main.record_harvest') }}" class="shadow-lg p-4 rounded-3">
     <h4 class="text-secondary mb-3">Harvest Details</h4>
-    <!-- Hidden field carries the farmer's primary key -->
     <input type="hidden" name="farmer_id" value="{{ farmer.id if farmer else '' }}">
-    <div class="mb-3">
-      <label for="crop_type" class="form-label">Crop Type</label>
-      <select class="form-control form-select-lg" id="crop_type" name="crop_type" required>
-        <option value="Castor">Castor</option>
-      </select>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="crop_type" class="form-label">Crop Type</label>
+        <select class="form-control form-select-lg" id="crop_type" name="crop_type" required>
+          <option value="Castor">Castor</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="variety" class="form-label">Variety</label>
+        <select class="form-control form-select-lg" id="variety" name="variety" required>
+          <option value="Tamar">Tamar</option>
+          <option value="Kariel">Kariel</option>
+          <option value="GCH2">GCH2</option>
+          <option value="GCH9">GCH9</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
     </div>
-    <div class="mb-3">
-      <label for="variety" class="form-label">Variety</label>
-      <select class="form-control form-select-lg" id="variety" name="variety" required>
-        <option value="Tamar">Tamar</option>
-        <option value="Kariel">Kariel</option>
-        <option value="GCH2">GCH2</option>
-        <option value="GCH9">GCH9</option>
-        <option value="Other">Other</option>
-      </select>
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <label for="kgs_harvested_clean" class="form-label">Kgs Harvested (Clean)</label>
+        <input type="number" step="0.01" class="form-control form-control-lg" id="kgs_harvested_clean" name="kgs_harvested_clean" required>
+        <small class="form-text text-muted">Price: Ksh 52 per kg</small>
+      </div>
+      <div class="col-md-6">
+        <label for="kgs_harvested_husk" class="form-label">Kgs Harvested (Husk)</label>
+        <input type="number" step="0.01" class="form-control form-control-lg" id="kgs_harvested_husk" name="kgs_harvested_husk" required>
+        <small class="form-text text-muted">Price: Ksh 26 per kg</small>
+      </div>
     </div>
-    <div class="mb-3">
-      <label for="kgs_harvested_clean" class="form-label">Kgs Harvested (Clean)</label>
-      <input type="number" step="0.01" class="form-control form-control-lg" id="kgs_harvested_clean" name="kgs_harvested_clean" required>
-      <small class="form-text text-muted">Price: Ksh 52 per kg</small>
-    </div>
-    <div class="mb-3">
-      <label for="kgs_harvested_husk" class="form-label">Kgs Harvested (Husk)</label>
-      <input type="number" step="0.01" class="form-control form-control-lg" id="kgs_harvested_husk" name="kgs_harvested_husk" required>
-      <small class="form-text text-muted">Price: Ksh 26 per kg</small>
-    </div>
-    <button type="submit" class="btn btn-success btn-lg">Record Harvest &amp; Proceed to Payment</button>
+    <button type="submit" class="btn btn-success btn-lg mt-4 w-100">Record Harvest & Proceed to Payment</button>
   </form>
 </div>
+
+<script>
+  function updatePlaceholder() {
+    const searchType = document.getElementById("search_type").value;
+    const searchTerm = document.getElementById("search_term");
+    searchTerm.placeholder = searchType === "id" ? "Enter Farmer ID" : "Enter Phone Number";
+  }
+</script>
 {% endblock %}

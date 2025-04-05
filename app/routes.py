@@ -32,6 +32,10 @@ auth_bp = Blueprint("auth", __name__)
 
 import logging
 
+@main_bp.route('/')
+def index():
+    return render_template('landing.html')
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -59,10 +63,6 @@ def logout():
     logout_user()
     flash('You have been logged out successfully!', 'success')
     return redirect(url_for('auth.login'))
-
-@main_bp.route('/')
-def index():
-    return redirect(url_for('auth.login'))  # Redirect to login
 
 @main_bp.route('/api/reports', methods=['GET'])
 def fetch_reports():

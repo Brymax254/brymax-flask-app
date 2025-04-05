@@ -153,12 +153,11 @@ class Harvest(db.Model):
 class Payment(db.Model):
     __tablename__ = 'payment'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)  # No need for autoincrement=True (PostgreSQL handles it)
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'), nullable=False)
     amount_paid = db.Column(db.Float, nullable=False)
     date_paid = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    # Establishes a relationship with the Farmer model.
     farmer = db.relationship('Farmer', backref='payments')
 
     def __repr__(self):
