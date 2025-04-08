@@ -153,15 +153,16 @@ class Harvest(db.Model):
 class Payment(db.Model):
     __tablename__ = 'payment'
 
-    id = db.Column(db.Integer, primary_key=True)  # No need for autoincrement=True (PostgreSQL handles it)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Explicitly enable autoincrement
     farmer_id = db.Column(db.Integer, db.ForeignKey('farmer.id'), nullable=False)
     amount_paid = db.Column(db.Float, nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
     date_paid = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     farmer = db.relationship('Farmer', backref='payments')
 
     def __repr__(self):
-        return f"<Payment {self.amount_paid}>"
+        return f"<Payment {self.amount_paid} via {self.payment_method}>"
 
 class Seed(db.Model):
     id = db.Column(db.Integer, primary_key=True)

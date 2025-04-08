@@ -1,113 +1,123 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container mt-5">
-  <!-- Flash messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
 
+  <!-- Page Header -->
+  <div class="text-center mb-4">
+    <h2 class="text-primary fw-bold">
+      <i class="bi bi-credit-card-fill me-2"></i> Process Payment
+    </h2>
+    <p class="text-muted">Easily process transactions for farmers and view receipts instantly.</p>
+  </div>
+
+  <!-- Search Farmer Section -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="text-secondary">
+        <i class="bi bi-search me-2"></i> Find a Farmer
+      </h5>
+      <form action="{{ url_for('main.payment') }}" method="GET" class="input-group input-group-lg">
+        <select class="form-select" id="search_type" name="search_type" required onchange="updatePlaceholder()">
+          <option value="id">Search by Farmer ID</option>
+          <option value="phone">Search by Phone Number</option>
+        </select>
+        <input type="text" class="form-control" id="search_term" name="farmer_id" placeholder="Enter Farmer ID" required value="{{ farmer_id or '' }}">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-search"></i> Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Farmer Details (if available) -->
+  {% if farmer %}
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="text-success fw-bold">
+        <i class="bi bi-person-badge-fill me-2"></i> Farmer Information
+      </h5>
+      <div class="row">
+        <div class="col-md-6">
+          <p><i class="bi bi-person-fill me-2"></i><strong>Name:</strong> {{ farmer.full_name }}</p>
+          <p><i class="bi bi-card-text me-2"></i><strong>ID:</strong> {{ farmer.unique_number }}</p>
+          <p><i class="bi bi-telephone-fill me-2"></i><strong>Phone:</strong> {{ farmer.phone_number }}</p>
+          <p><i class="bi bi-geo-alt-fill me-2"></i><strong>County:</strong> {{ farmer.county }}</p>
+          <p><i class="bi bi-pin-map-fill me-2"></i><strong>Ward:</strong> {{ farmer.ward }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><i class="bi bi-house-door-fill me-2"></i><strong>Village:</strong> {{ farmer.village }}</p>
+          <p><i class="bi bi-grid-3x3-gap-fill me-2"></i><strong>Land Size:</strong> {{ farmer.land_size }} acres</p>
+          <p><i class="bi bi-droplet-fill text-success me-2"></i><strong>Clean Harvest:</strong> {{ total_clean if total_clean is not none else 'N/A' }} Kg</p>
+          <p><i class="bi bi-droplet-half text-success me-2"></i><strong>Husk Harvest:</strong> {{ total_husk if total_husk is not none else 'N/A' }} Kg</p>
+          <p><i class="bi bi-cash me-2 text-warning"></i><strong>Expected Payment:</strong> Ksh {{ total_payment | round(2) if total_payment else 'N/A' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Payment Processing Section -->
   <div class="row">
-    <!-- Payment Section -->
-    <div class="col-lg-6 mb-4">
-      <div class="card shadow-sm">
+    <!-- Payment Methods & Form -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
-          <h4 class="card-title mb-0">Make a Payment</h4>
+          <h5 class="card-title mb-0">
+            <i class="bi bi-wallet-fill me-2"></i> Payment Methods
+          </h5>
         </div>
         <div class="card-body">
-          {% if farmer and total_payment is not none %}
-          <div class="mb-4">
-            <h5 class="mb-3">Payment Details</h5>
-            <ul class="list-unstyled">
-              <li><strong>Farmer Name:</strong> {{ farmer.full_name }}</li>
-              <li><strong>Farmer ID:</strong> {{ farmer.unique_number }}</li>
-              <li><strong>Phone Number:</strong> {{ farmer.phone_number }}</li>
-              <li>
-                <strong>Clean Harvest (Kg):</strong>
-                {{ total_clean if total_clean is not none else 'N/A' }}
-              </li>
-              <li>
-                <strong>Husk Harvest (Kg):</strong>
-                {{ total_husk if total_husk is not none else 'N/A' }}
-              </li>
-              <li>
-                <strong>Total Payment:</strong> Ksh
-                {% if total_payment is not none %}
-                  {{ total_payment | round(2) }}
-                {% else %}
-                  N/A
-                {% endif %}
-              </li>
-            </ul>
-          </div>
-          {% endif %}
-
           <form method="POST" action="{{ url_for('main.payment', farmer_id=farmer_id, total_clean=total_clean, total_husk=total_husk, total_payment=total_payment) }}">
             <div class="mb-3">
-              <label for="farmer_id" class="form-label">Farmer ID</label>
-              <input type="text" class="form-control" id="farmer_id" name="farmer_id" required value="{{ farmer_id }}" readonly>
-            </div>
-            <div class="mb-3">
-              <label for="payment_method" class="form-label">Payment Method</label>
-              <select class="form-select" id="payment_method" name="payment_method" required>
-                <option value="Cash">Cash</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Mobile Money">Mobile Money</option>
+              <label for="payment_method" class="form-label fs-5">
+                <i class="bi bi-credit-card me-1"></i> Choose Payment Method
+              </label>
+              <select class="form-select form-select-lg" id="payment_method" name="payment_method" required>
+                <option value="Cash"><i class="bi bi-cash"></i> Cash</option>
+                <option value="Credit Card"><i class="bi bi-credit-card"></i> Credit Card</option>
+                <option value="Mobile Money"><i class="bi bi-phone"></i> Mobile Money</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Submit Payment</button>
+            <button type="submit" class="btn btn-success btn-lg w-100">
+              <i class="bi bi-check-circle me-1"></i> Confirm Payment
+            </button>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- Receipt Section -->
-    <div class="col-lg-6 mb-4">
+    <!-- Receipt Preview -->
+    <div class="col-lg-6">
       {% if receipt %}
-      <div class="card shadow-sm">
+      <div class="card shadow-sm border-0">
         <div class="card-header bg-dark text-white">
-          <h4 class="card-title mb-0">Payment Receipt</h4>
+          <h5 class="card-title mb-0">
+            <i class="bi bi-receipt me-2"></i> Payment Receipt
+          </h5>
         </div>
         <div class="card-body">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item"><strong>Receipt Number:</strong> {{ receipt.receipt_number }}</li>
-            <li class="list-group-item"><strong>Date:</strong> {{ receipt.date }}</li>
-            <li class="list-group-item"><strong>Farmer Name:</strong> {{ receipt.farmer.full_name }}</li>
-            <li class="list-group-item"><strong>Farmer ID:</strong> {{ receipt.farmer.unique_number }}</li>
-            <li class="list-group-item"><strong>Phone Number:</strong> {{ receipt.farmer.phone_number }}</li>
-            <li class="list-group-item">
-              <strong>Clean Harvest (Kg):</strong>
-              {{ receipt.total_clean if receipt.total_clean is not none else 'N/A' }}
-            </li>
-            <li class="list-group-item">
-              <strong>Husk Harvest (Kg):</strong>
-              {{ receipt.total_husk if receipt.total_husk is not none else 'N/A' }}
-            </li>
-            <li class="list-group-item">
-              <strong>Total Payment:</strong> Ksh
-              {% if receipt.total_payment is not none %}
-                {{ receipt.total_payment | round(2) }}
-              {% else %}
-                N/A
-              {% endif %}
-            </li>
-            <li class="list-group-item"><strong>Payment Method:</strong> {{ receipt.payment_method }}</li>
+          <ul class="list-group list-group-flush fs-5">
+            <li class="list-group-item"><i class="bi bi-hash me-2"></i><strong>Receipt #:</strong> {{ receipt.receipt_number }}</li>
+            <li class="list-group-item"><i class="bi bi-calendar-check me-2"></i><strong>Date:</strong> {{ receipt.date }}</li>
+            <li class="list-group-item"><i class="bi bi-person-fill me-2"></i><strong>Name:</strong> {{ receipt.farmer.full_name }}</li>
+            <li class="list-group-item"><i class="bi bi-card-text me-2"></i><strong>ID:</strong> {{ receipt.farmer.unique_number }}</li>
+            <li class="list-group-item"><i class="bi bi-droplet-fill me-2"></i><strong>Clean Harvest:</strong> {{ receipt.total_clean }} Kg</li>
+            <li class="list-group-item"><i class="bi bi-droplet-half me-2"></i><strong>Husk Harvest:</strong> {{ receipt.total_husk }} Kg</li>
+            <li class="list-group-item"><i class="bi bi-cash me-2"></i><strong>Total Payment:</strong> Ksh {{ receipt.total_payment | round(2) }}</li>
+            <li class="list-group-item"><i class="bi bi-phone me-2"></i><strong>Method:</strong> {{ receipt.payment_method }}</li>
           </ul>
         </div>
-      </div>
-      {% else %}
-      <div class="alert alert-warning">
-        <p>No receipt available.</p>
       </div>
       {% endif %}
     </div>
   </div>
 </div>
+
+<script>
+  function updatePlaceholder() {
+    const searchType = document.getElementById("search_type").value;
+    const searchTerm = document.getElementById("search_term");
+    searchTerm.placeholder = searchType === "id" ? "Enter Farmer ID" : "Enter Phone Number";
+  }
+</script>
 {% endblock %}

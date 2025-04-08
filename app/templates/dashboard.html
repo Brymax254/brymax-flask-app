@@ -71,22 +71,20 @@
     <div class="row g-4">
       <!-- Main Card Grid -->
       {% for card in [
-        {'title': 'Visualize Data', 'description': 'Generate analytical visuals.', 'icon': 'bi-bar-chart-line', 'url': url_for('main.visualize'), 'color': 'primary'},
-        {'title': 'Register Farmers', 'description': 'Add new farmer registrations.', 'icon': 'bi-pencil-square', 'url': url_for('main.register_farmer'), 'color': 'info'},
-        {'title': 'Payment', 'description': 'Process transactions.', 'icon': 'bi-credit-card', 'url': url_for('main.payment'), 'color': 'warning'},
-        {'title': 'Enter Daily Report', 'description': 'Track today’s performance metrics.', 'icon': 'bi-file-earmark-text', 'url': url_for('main.daily_report'), 'color': 'orange'},
-        {'title': 'Payroll', 'description': 'Manage payroll operations.', 'icon': 'bi-cash-stack', 'url': url_for('main.payroll'), 'color': 'success'},
-        {'title': 'Manage Plough', 'description': 'Track plough operations.', 'icon': 'bi-wrench', 'url': url_for('main.plough_default'), 'color': 'secondary'},
-        {'title': 'Profile', 'description': 'View your profile.', 'icon': 'bi-person-circle', 'url': url_for('main.profile'), 'color': 'dark'},
-        {'title': 'View PDF', 'description': 'Display PDF documents.', 'icon': 'bi-file-earmark-pdf', 'url': url_for('main.view_pdf'), 'color': 'danger'},
-        {'title': 'View Reports', 'description': 'Analyze detailed reports.', 'icon': 'bi-file-earmark-bar-graph', 'url': url_for('main.view_reports'), 'color': 'primary'},
-        {'title': 'Farmers', 'description': 'Manage registered farmers.', 'icon': 'bi-people', 'url': url_for('main.farmers'), 'color': 'teal'},
-        {'title': 'Issue Fertilizer', 'description': 'Distribute fertilizers to farmers.', 'icon': 'bi-droplet', 'url': url_for('main.issue_fertilizer'), 'color': 'warning'},
-        {'title': 'Issue Manure', 'description': 'Manage manure distribution for sustainable soil health.', 'icon': 'bi-basket3', 'url': url_for('main.issue_manure'), 'color': 'dark'},
-        {'title': 'Issue Pesticides', 'description': 'Protect crops with effective pesticide use.', 'icon': 'bi-shield-fill-exclamation', 'url': url_for('main.issue_pesticides'), 'color': 'danger'},
-        {'title': 'Harvest Management', 'description': 'Keep track of harvested crops and ensure efficient management.', 'icon': 'bi-tree', 'url': url_for('main.record_harvest'), 'color': 'success'},
-        {'title': 'Google Sheets Visualize', 'description': 'Display visuals from Google Sheets.', 'icon': 'bi-table', 'url': url_for('main.google_sheets_visualize'), 'color': 'purple'}
-      ] %}
+      {'title': 'Visualize Data', 'description': 'Generate analytical visuals.', 'icon': 'bi-bar-chart-line', 'url': url_for('main.visualize'), 'color': 'primary'},
+      {'title': 'Register Farmers', 'description': 'Add new farmer registrations.', 'icon': 'bi-pencil-square', 'url': url_for('main.register_farmer'), 'color': 'info'},
+      {'title': 'Payment', 'description': 'Process transactions.', 'icon': 'bi-credit-card', 'url': url_for('main.payment'), 'color': 'warning'},
+      {'title': 'Enter Daily Report', 'description': 'Track today’s performance metrics.', 'icon': 'bi-file-earmark-text', 'url': url_for('main.daily_report'), 'color': 'orange'},
+      {'title': 'Payroll', 'description': 'Manage payroll operations.', 'icon': 'bi-cash-stack', 'url': url_for('main.payroll'), 'color': 'success'},
+      {'title': 'Manage Plough', 'description': 'Track plough operations.', 'icon': 'bi-wrench', 'url': url_for('main.plough_default'), 'color': 'secondary'},
+      {'title': 'Profile', 'description': 'View your profile.', 'icon': 'bi-person-circle', 'url': url_for('main.profile'), 'color': 'dark'},
+      {'title': 'View PDF', 'description': 'Display PDF documents.', 'icon': 'bi-file-earmark-pdf', 'url': url_for('main.view_pdf'), 'color': 'danger'},
+      {'title': 'View Reports', 'description': 'Analyze detailed reports.', 'icon': 'bi-file-earmark-bar-graph', 'url': url_for('main.view_reports'), 'color': 'primary'},
+      {'title': 'Farmers', 'description': 'Manage registered farmers.', 'icon': 'bi-people', 'url': url_for('main.farmers'), 'color': 'teal'},
+      {'title': 'Issue Manure', 'description': 'Manage manure distribution for sustainable soil health.', 'icon': 'bi-basket3', 'url': url_for('main.issue_manure'), 'color': 'dark'},
+      {'title': 'Harvest Management', 'description': 'Keep track of harvested crops and ensure efficient management.', 'icon': 'bi-tree', 'url': url_for('main.record_harvest'), 'color': 'success'},
+      {'title': 'Google Sheets Visualize', 'description': 'Display visuals from Google Sheets.', 'icon': 'bi-table', 'url': url_for('main.google_sheets_visualize'), 'color': 'purple'}
+    ] %}
       <div class="col-12 col-sm-6 col-md-4 col-lg-3">
         <div class="card custom-card shadow-lg animate__animated animate__fadeIn" style="animation-delay: {{ loop.index * 0.2 }}s;">
           <div class="card-body text-center">

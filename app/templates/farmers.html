@@ -2,11 +2,13 @@
 {% block content %}
 <div class="container mt-4">
 
+  <!-- Payment Receipt Section (If Available) -->
   {% if receipt %}
-  <!-- Payment Receipt Card -->
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-dark text-white">
-      <h4 class="card-title mb-0">Payment Receipt</h4>
+      <h4 class="card-title mb-0">
+        <i class="bi bi-receipt me-2"></i> Payment Receipt
+      </h4>
     </div>
     <div class="card-body">
       <ul class="list-group list-group-flush">
@@ -15,8 +17,8 @@
         <li class="list-group-item"><strong>Farmer Name:</strong> {{ receipt.farmer.full_name }}</li>
         <li class="list-group-item"><strong>Farmer ID:</strong> {{ receipt.farmer.unique_number }}</li>
         <li class="list-group-item"><strong>Phone Number:</strong> {{ receipt.farmer.phone_number }}</li>
-        <li class="list-group-item"><strong>Clean Harvest (Kg):</strong> {{ receipt.total_clean or 'N/A' }}</li>
-        <li class="list-group-item"><strong>Husk Harvest (Kg):</strong> {{ receipt.total_husk or 'N/A' }}</li>
+        <li class="list-group-item"><strong>Clean Harvest:</strong> {{ receipt.total_clean or 'N/A' }} Kg</li>
+        <li class="list-group-item"><strong>Husk Harvest:</strong> {{ receipt.total_husk or 'N/A' }} Kg</li>
         <li class="list-group-item"><strong>Total Payment:</strong> Ksh {{ receipt.total_payment | round(2) if receipt.total_payment else 'N/A' }}</li>
         <li class="list-group-item"><strong>Payment Method:</strong> {{ receipt.payment_method }}</li>
       </ul>
@@ -24,6 +26,7 @@
   </div>
   {% endif %}
 
+  <!-- Farmers Section -->
   <h2 class="mb-4">Registered Farmers</h2>
 
   <!-- Action Buttons -->
@@ -56,10 +59,12 @@
           <th>Kgs Issued</th>
           <th>Kgs Harvested (Clean)</th>
           <th>Kgs Harvested (Husk)</th>
+          <th>Total Payment</th>
           <th>Amount Received</th>
           <th>Last Harvest Date</th>
           <th>Last Payment Date</th>
           <th>Field Officer</th>
+          <th>Make Payment</th>
         </tr>
       </thead>
       <tbody>
@@ -71,9 +76,8 @@
           <td>{{ farmer.county }}</td>
           <td>{{ farmer.subcounty }}</td>
           <td>{{ farmer.ward }}</td>
-          <td class="{% if farmer.phone_number|length < 10 or farmer.phone_number|length > 13 %}bg-warning{% endif %}">
-            {{ farmer.phone_number }}
-          </td>
+          <td>{{ farmer.location }}</td>
+          <td class="{% if farmer.phone_number|length < 10 or farmer.phone_number|length > 13 %}bg-warning{% endif %}">{{ farmer.phone_number }}</td>
           <td>{{ farmer.village }}</td>
           <td>{{ farmer.land_size }}</td>
           <td>{{ farmer.season }}</td>
@@ -81,10 +85,16 @@
           <td>{{ farmer.kgs_issued or 'N/A' }}</td>
           <td>{{ farmer.kgs_harvested_clean or 'N/A' }}</td>
           <td>{{ farmer.kgs_harvested_husk or 'N/A' }}</td>
+          <td>Ksh {{ ((farmer.kgs_harvested_clean or 0) * 52 + (farmer.kgs_harvested_husk or 0) * 26) | round(2) }}</td>
           <td>{{ farmer.amount_received or 'N/A' }}</td>
           <td>{{ farmer.last_harvest_date.strftime("%Y-%m-%d") if farmer.last_harvest_date else 'N/A' }}</td>
           <td>{{ farmer.last_payment_date.strftime("%Y-%m-%d") if farmer.last_payment_date else 'N/A' }}</td>
           <td>{{ farmer.field_officer }}</td>
+          <td>
+            <a href="{{ url_for('main.payment', farmer_id=farmer.unique_number) }}" class="btn btn-primary btn-sm">
+              <i class="bi bi-cash"></i> Pay
+            </a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
@@ -92,7 +102,6 @@
   </div>
 </div>
 
-<!-- JavaScript for Action Buttons -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     // Select All Farmers
