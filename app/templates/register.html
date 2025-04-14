@@ -1,46 +1,149 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h2 class="mt-4">Register Farmer</h2>
-    <form method="POST" action="{{ url_for('main.register_farmer') }}">
-        <div class="mb-3">
-            <label for="full_name" class="form-label">Farmer's Name</label>
-            <input type="text" class="form-control" id="full_name" name="full_name" required>
+<div class="container mt-5">
+  <div class="card shadow-lg border-0">
+    <!-- Card Header -->
+    <div class="card-header bg-primary text-white text-center py-4">
+      <h2 class="fw-bold mb-1">
+        <i class="bi bi-person-plus-fill me-2"></i>Register Farmer
+      </h2>
+      <p class="mb-0">Join our community of progressive farmers</p>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body p-5">
+      <form id="registerForm" method="POST" action="{{ url_for('main.register_farmer') }}">
+        <!-- Row 1: Full Name & Contact Number -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Farmer's Name" required>
+              <label for="full_name">Farmer's Name</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="tel" class="form-control" id="contact" name="phone_number" placeholder="Contact Number" required>
+              <label for="contact">Contact Number</label>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-            <label for="contact" class="form-label">Contact Number</label>
-            <input type="tel" class="form-control" id="contact" name="phone_number" required>
+        <!-- Row 2: County, Subcounty, Ward -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="county" name="county" placeholder="County" required>
+              <label for="county">County</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="subcounty" name="subcounty" placeholder="Subcounty" required>
+              <label for="subcounty">Subcounty</label>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="ward" name="ward" placeholder="Ward" required>
+              <label for="ward">Ward</label>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-            <label for="county" class="form-label">County</label>
-            <input type="text" class="form-control" id="county" name="county" required>
+        <!-- Row 3: Location, Village -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="location" name="location" placeholder="Location" required>
+              <label for="location">Location</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="village" name="village" placeholder="Village" required>
+              <label for="village">Village</label>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-            <label for="subcounty" class="form-label">Subcounty</label>
-            <input type="text" class="form-control" id="subcounty" name="subcounty" required>
+        <!-- Row 4: Land Size, Season -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="number" class="form-control" id="land_size" name="land_size" step="0.01" placeholder="Land Size (in acres)" required>
+              <label for="land_size">Land Size (in acres)</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="season" name="season" placeholder="Season" required>
+              <label for="season">Season</label>
+            </div>
+          </div>
         </div>
-        <div class="mb-3">
-            <label for="ward" class="form-label">Ward</label>
-            <input type="text" class="form-control" id="ward" name="ward" required>
+        <!-- Row 5: Field Officer -->
+        <div class="mb-4">
+          <div class="form-floating">
+            <select class="form-select" id="field_officer" name="field_officer" required>
+              <option value="" selected disabled>Select Field Officer</option>
+              <option value="Caroline Wanjiku">Caroline Wanjiku</option>
+              <option value="Ian Jeff Gathura">Ian Jeff Gathura</option>
+            </select>
+            <label for="field_officer">Field Officer</label>
+          </div>
         </div>
-        <div class="mb-3">
-            <label for="location" class="form-label">Location</label>
-            <input type="text" class="form-control" id="location" name="location" required>
+        <!-- Submit Button -->
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary btn-lg">Register Farmer</button>
         </div>
-        <div class="mb-3">
-            <label for="village" class="form-label">Village</label>
-            <input type="text" class="form-control" id="village" name="village" required>
-        </div>
-        <div class="mb-3">
-            <label for="land_size" class="form-label">Land Size (in acres)</label>
-            <input type="number" class="form-control" id="land_size" name="land_size" step="0.01" required>
-        </div>
-        <div class="mb-3">
-            <label for="season" class="form-label">Season</label>
-            <input type="text" class="form-control" id="season" name="season" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
+      </form>
+    </div>
+  </div>
 </div>
+
+<!-- Include SweetAlert2 from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent default form submission
+
+    const form = this;
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Success popup with happy emoji
+        Swal.fire({
+          title: 'Success!',
+          text: data.message,
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        form.reset(); // Reset the form to allow registering another farmer
+      } else {
+        // Error popup if registration failed
+        Swal.fire({
+          title: 'Oops!',
+          text: data.error || "Ops! The farmer is not registered. Try again.",
+          icon: 'error',
+          confirmButtonText: 'Try Again'
+        });
+      }
+    })
+    .catch(error => {
+      Swal.fire({
+        title: 'Oops!',
+        text: "An error occurred. The farmer is not registered. Try again.",
+        icon: 'error',
+        confirmButtonText: 'Try Again'
+      });
+    });
+  });
+</script>
 {% endblock %}

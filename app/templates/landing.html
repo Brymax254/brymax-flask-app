@@ -15,135 +15,158 @@
 
   <!-- Custom Styles -->
   <style>
-    /* ==========================================================================
-       Global Variables & Reset
-       ========================================================================== */
-    :root {
-      --primary-color: #004d99;
-      --secondary-color: #FFD700;
-      --accent-color: #0080ff;
-      --light-bg: #f7f7f7;
-      --white: #fff;
-      --gray-bg: #f1f1f1;
-      --text-color: #222;
-      --text-secondary: #444;
-    }
+/* ==========================================================================
+   Global Variables & Reset
+   ========================================================================== */
+:root {
+  /* Base Colours */
+  --primary-color: #004d99;
+  --secondary-color: #FFD700;
+  --accent-color: #0080ff;
+  --light-bg: #f7f7f7;
+  --white: #fff;
+  --gray-bg: #f1f1f1;
+  --text-color: #222;
+  --text-secondary: #444;
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  /* Additional Variables */
+  --primary-gradient: linear-gradient(45deg, #004d99, #002f4d);
+  --transition-speed: 0.3s;
+  --btn-hover-scale: 1.05;
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      color: var(--text-color);
-      background: var(--light-bg);
-      line-height: 1.6;
-    }
+  /* Button Colours */
+  --btn-about: #1976d2;
+  --btn-features: #ff9800;
+  --btn-faq: #4caf50;
+  --btn-contact: #9c27b0;
+  --btn-login: #f44336;
+  --btn-register: #00bfa5;
+}
 
-    /* ==========================================================================
-       Navigation Bar
-       ========================================================================== */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: linear-gradient(45deg, #00579c, #002f4d);
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 1000;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .nav-left {
-      display: flex;
-      align-items: center;
-    }
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  background: var(--light-bg);
+  line-height: 1.6;
+}
 
-    .logo img {
-      /* Using the local file in static folder */
-      width: 100px;
-      height: auto;
-      border-radius: 5px;
-      object-fit: contain;
-      margin-right: 10px;
-    }
+/* ==========================================================================
+   Navigation Bar
+   ========================================================================== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--primary-gradient);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
 
-    .brand {
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: var(--white);
-    }
+.nav-left {
+  display: flex;
+  align-items: center;
+}
 
-    /* Navigation Buttons */
-    .nav-buttons {
-      display: flex;
-      gap: 1rem;
-    }
+.logo img {
+  width: 100px;
+  height: auto;
+  border-radius: 5px;
+  object-fit: contain;
+  margin-right: 10px;
+}
 
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
+.brand {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--white);
+}
 
-    .about-btn    { background: #1976d2; color: var(--white); }
-    .features-btn { background: #ff9800; color: var(--white); }
-    .faq-btn      { background: #4caf50; color: var(--white); }
-    .contact-btn  { background: #9c27b0; color: var(--white); }
-    .login-btn    { background: #f44336; color: var(--white); }
+/* Navigation Buttons */
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+}
 
-    .nav-btn:hover {
-      transform: scale(1.05);
-      opacity: 0.9;
-    }
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform var(--transition-speed) ease,
+              opacity var(--transition-speed) ease;
+}
 
-    /* Hamburger Menu for Mobile */
-    .hamburger-menu {
-      display: none;
-      font-size: 1.8rem;
-      background: none;
-      border: none;
-      color: var(--white);
-      cursor: pointer;
-    }
+/* Individual Button Colours */
+.about-btn    { background: var(--btn-about); color: var(--white); }
+.features-btn { background: var(--btn-features); color: var(--white); }
+.faq-btn      { background: var(--btn-faq); color: var(--white); }
+.contact-btn  { background: var(--btn-contact); color: var(--white); }
+.login-btn    { background: var(--btn-login); color: var(--white); }
+.register-btn { background: var(--btn-register); color: var(--white); }
 
-    .mobile-menu {
-      display: none;
-      flex-direction: column;
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.9);
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    }
+/* Hover Effects */
+.nav-btn:hover {
+  transform: scale(var(--btn-hover-scale));
+  opacity: 0.9;
+}
 
-    .mobile-menu button {
-      background: none;
-      color: var(--white);
-      padding: 10px;
-      font-size: 1.2rem;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      text-align: left;
-    }
+/* Hamburger Menu for Mobile */
+.hamburger-menu {
+  display: none;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+}
 
-    .mobile-menu button:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu button {
+  background: none;
+  color: var(--white);
+  padding: 10px;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.mobile-menu button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Styles: For smaller screens */
+@media (max-width: 768px) {
+  .hamburger-menu { display: block; }
+  .nav-buttons { display: none; }
+}
 
     /* ==========================================================================
        Hero Section
@@ -527,44 +550,49 @@
   </style>
 </head>
 <body>
-  <!-- Navigation Bar -->
-  <nav class="navbar">
-    <div class="nav-left">
-      <div class="logo">
-        <a href="#">
-          <img src="/static/logo.png" alt="BRYMAX TECH LIMITED Logo">
-        </a>
-      </div>
-      <div class="brand">BRYMAX TECH LIMITED</div>
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="nav-left">
+    <div class="logo">
+      <a href="#">
+        <img src="/static/logo.png" alt="BRYMAX TECH LIMITED Logo">
+      </a>
     </div>
-    <div class="nav-buttons">
-      <button class="nav-btn about-btn" onclick="location.href='#about'" aria-label="About">
-        <i class="fas fa-info-circle"></i> About
-      </button>
-      <button class="nav-btn features-btn" onclick="location.href='#features'" aria-label="Features">
-        <i class="fas fa-cogs"></i> Features
-      </button>
-      <button class="nav-btn faq-btn" onclick="location.href='#faq'" aria-label="FAQ">
-        <i class="fas fa-question-circle"></i> FAQ
-      </button>
-      <button class="nav-btn contact-btn" onclick="location.href='#contact'" aria-label="Contact">
-        <i class="fas fa-envelope"></i> Contact
-      </button>
-      <button class="nav-btn login-btn" onclick="document.getElementById('loginModal').style.display='flex'" aria-label="Login">
-        <i class="fas fa-user"></i> Login
-      </button>
-    </div>
-    <button class="hamburger-menu" onclick="toggleMenu()" aria-label="Open Navigation Menu">
-      <i class="fas fa-bars"></i>
+    <div class="brand">BRYMAX TECH LIMITED</div>
+  </div>
+  <div class="nav-buttons">
+    <button class="nav-btn about-btn" onclick="location.href='#about'" aria-label="About">
+      <i class="fas fa-info-circle"></i> About
     </button>
-    <div class="mobile-menu" id="mobileMenu">
-      <button onclick="location.href='#about'">About</button>
-      <button onclick="location.href='#features'">Features</button>
-      <button onclick="location.href='#faq'">FAQ</button>
-      <button onclick="location.href='#contact'">Contact</button>
-      <button onclick="document.getElementById('loginModal').style.display='flex'">Login</button>
-    </div>
-  </nav>
+    <button class="nav-btn features-btn" onclick="location.href='#features'" aria-label="Features">
+      <i class="fas fa-cogs"></i> Features
+    </button>
+    <button class="nav-btn faq-btn" onclick="location.href='#faq'" aria-label="FAQ">
+      <i class="fas fa-question-circle"></i> FAQ
+    </button>
+    <button class="nav-btn contact-btn" onclick="location.href='#contact'" aria-label="Contact">
+      <i class="fas fa-envelope"></i> Contact
+    </button>
+    <button class="nav-btn login-btn" onclick="document.getElementById('loginModal').style.display='flex'" aria-label="Login">
+      <i class="fas fa-user"></i> Login
+    </button>
+    <button class="nav-btn register-btn" onclick="location.href='{{ url_for('main.register_farmer') }}'" aria-label="Register as Farmer">
+      <i class="fas fa-pencil-alt"></i> Register as Farmer
+    </button>
+  </div>
+  <button class="hamburger-menu" onclick="toggleMenu()" aria-label="Open Navigation Menu">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="mobile-menu" id="mobileMenu">
+    <button onclick="location.href='#about'">About</button>
+    <button onclick="location.href='#features'">Features</button>
+    <button onclick="location.href='#faq'">FAQ</button>
+    <button onclick="location.href='#contact'">Contact</button>
+    <button onclick="document.getElementById('loginModal').style.display='flex'">Login</button>
+    <button onclick="location.href='{{ url_for('main.register_farmer') }}'">Register as Farmer</button>
+  </div>
+</nav>
+
 
   <!-- Hero Section -->
   <header class="content animate__animated animate__fadeIn">

@@ -542,22 +542,40 @@ def pdfs(filename):
 def another_pdfs(filename):
     """Serve another type of PDF files."""
     return send_from_directory('static/another_pdfs', filename, as_attachment=False)# Main Farmer zone
+
+
 @main_bp.route('/register', methods=['GET', 'POST'])
 def register_farmer():
     if request.method == 'POST':
+        # Capture form data
         phone_number = request.form['phone_number']
         existing_farmer = Farmer.query.filter_by(phone_number=phone_number).first()
         if existing_farmer:
-            flash("Phone number already registered!", "warning")
-            return redirect(url_for('main.register_farmer'))
+            msg = "Phone number already registered!"
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': False, 'error': msg}), 400
+            else:
+                flash(msg, "warning")
+                return redirect(url_for('main.register_farmer'))
+
         try:
             land_size = float(request.form['land_size'])
         except ValueError:
-            flash("Invalid land size! Please enter a valid number.", "danger")
-            return redirect(url_for('main.register_farmer'))
+            msg = "Invalid land size! Please enter a valid number."
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': False, 'error': msg}), 400
+            else:
+                flash(msg, "danger")
+                return redirect(url_for('main.register_farmer'))
+
         season = request.form['season']
         year = datetime.now().year
         farmer_id, farmer_number = generate_farmer_id(season, year)
+
+        # Capture field officer from the form
+        field_officer = request.form['field_officer']
+
+        # Create the new farmer instance
         farmer = Farmer(
             unique_number=farmer_id,
             full_name=request.form['full_name'],
@@ -570,12 +588,27 @@ def register_farmer():
             land_size=land_size,
             season=season,
             year=year,
-            farmer_number=farmer_number
+            farmer_number=farmer_number,
+            field_officer=field_officer
         )
-        db.session.add(farmer)
-        db.session.commit()
-        flash("Farmer registered successfully!", "success")
-        return redirect(url_for('main.fetch_farmer', farmer_id=farmer_id))
+        try:
+            db.session.add(farmer)
+            db.session.commit()
+            msg = "Farmer registered successfully 😊"
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': True, 'message': msg})
+            else:
+                flash(msg, "success")
+                return redirect(url_for('main.fetch_farmer', farmer_id=farmer_id))
+        except Exception as e:
+            db.session.rollback()
+            msg = "Ops! The farmer is not registered. Try again."
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': False, 'error': msg}), 500
+            else:
+                flash(msg, "danger")
+                return redirect(url_for('main.register_farmer'))
+
     return render_template('register.html')
 
 @main_bp.route('/fetch/<string:farmer_id>')
@@ -1132,75 +1165,32 @@ def post_update():
 
     return redirect(url_for('main.dashboard'))
 
-@main_bp.route('/export_farmers_excel')
-def export_farmers_excel():
-    farmers = Farmer.query.all()
-
-    # Create DataFrame
-    data = [{
-        "Farmer ID": farmer.unique_number,
-        "Name": farmer.full_name,
-        "County": farmer.county,
-        "Subcounty": farmer.subcounty,
-        "Ward": farmer.ward,
-        "Location": farmer.location,
-        "Phone Number": farmer.phone_number,
-        "Village": farmer.village,
-        "Land Size (acres)": farmer.land_size,
-        "Season": farmer.season,
-        "Fertilizer Type": farmer.fertilizer_type or "N/A",
-        "Kgs Issued": farmer.kgs_issued or "N/A",
-        "Kgs Harvested (Clean)": farmer.kgs_harvested_clean or "N/A",
-        "Kgs Harvested (Husk)": farmer.kgs_harvested_husk or "N/A",
-        "Amount Received": farmer.amount_received or "N/A",
-        "Last Harvest Date": farmer.last_harvest_date.strftime("%Y-%m-%d") if farmer.last_harvest_date else "N/A",
-        "Last Payment Date": farmer.last_payment_date.strftime("%Y-%m-%d") if farmer.last_payment_date else "N/A",
-        "Field Officer": farmer.field_officer
-    } for farmer in farmers]
-
-    df = pd.DataFrame(data)
-
-    # Highlight phone numbers with less than 10 digits or more than 13 digits
-    def highlight_contact(val):
-        return "background-color: yellow" if len(str(val)) < 10 or len(str(val)) > 13 else ""
-
-    df.style.applymap(highlight_contact, subset=["Phone Number"])
-
-    # Save to Excel with formatting
-    excel_file = BytesIO()
-    writer = pd.ExcelWriter(excel_file, engine="openpyxl")
-    df.to_excel(writer, sheet_name="Farmers", index=False)
-
-    # Format column widths
-    worksheet = writer.sheets["Farmers"]
-    for col_idx, col_name in enumerate(df.columns, 1):
-        worksheet.column_dimensions[worksheet.cell(row=1, column=col_idx).column_letter].width = 18
-
-    writer.close()
-
-    # Send file for download
-    excel_file.seek(0)
-    return send_file(excel_file, download_name="Farmers_Report.xlsx", as_attachment=True)
-
 @main_bp.route('/delete_farmers', methods=['POST'])
 def delete_farmers():
-    data = request.json
+    data = request.get_json()
     farmer_ids = data.get("farmer_ids")
 
     if not farmer_ids:
+        logging.debug("No farmer IDs provided in request.")
         return jsonify({"error": "No farmers selected"}), 400
 
     farmers_to_delete = Farmer.query.filter(Farmer.unique_number.in_(farmer_ids)).all()
 
     if not farmers_to_delete:
+        logging.debug(f"No matching farmers found for IDs: {farmer_ids}")
         return jsonify({"error": "No matching farmers found"}), 404
 
-    for farmer in farmers_to_delete:
-        db.session.delete(farmer)
-
-    db.session.commit()
-    return jsonify({"message": f"{len(farmers_to_delete)} farmers deleted successfully"}), 200
-
+    try:
+        for farmer in farmers_to_delete:
+            logging.debug(f"Deleting farmer: {farmer.unique_number}")
+            db.session.delete(farmer)
+        db.session.commit()
+        logging.info(f"Deleted {len(farmers_to_delete)} farmers successfully.")
+        return jsonify({"message": f"{len(farmers_to_delete)} farmers deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        logging.exception("Error occurred while deleting farmers:")
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 @main_bp.route('/farmers/<season>')
 def filter_farmers(season):
@@ -1215,6 +1205,89 @@ def filter_farmers(season):
         "Name": farmer.full_name,
         "Season": farmer.season
     } for farmer in farmers])
+
+@main_bp.route('/export_quick_summary_excel')
+def export_quick_summary_excel():
+    # Query all farmers
+    farmers = Farmer.query.all()
+
+    # Create a list of dictionaries with only the quick summary fields.
+    data = []
+    for farmer in farmers:
+        data.append({
+            "Farmer Name": farmer.full_name,
+            "County": farmer.county,
+            "Subcounty": farmer.subcounty,
+            "Ward": farmer.ward,
+            "Acres": farmer.land_size,
+            "Village": farmer.village,
+            "Field Officer": farmer.field_officer,
+            "Phone Number": farmer.phone_number,
+        })
+
+    # Convert the data into a pandas DataFrame.
+    df = pd.DataFrame(data)
+
+    # Write the DataFrame to an Excel file in memory.
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Quick Summary')
+    output.seek(0)
+
+    # Return the Excel file as an attachment.
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="quick_summary.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+@main_bp.route('/export_farmers_excel')
+def export_farmers_excel():
+    # Query all farmers
+    farmers = Farmer.query.all()
+
+    # Create a list of dictionaries with detailed fields.
+    data = []
+    for farmer in farmers:
+        data.append({
+            "Farmer ID": farmer.unique_number,
+            "Name": farmer.full_name,
+            "County": farmer.county,
+            "Subcounty": farmer.subcounty,
+            "Ward": farmer.ward,
+            "Location": farmer.location,
+            "Phone Number": farmer.phone_number,
+            "Village": farmer.village,
+            "Land Size (acres)": farmer.land_size,
+            "Season": farmer.season,
+            "Fertilizer Type": farmer.fertilizer_type or "N/A",
+            "Kgs Issued": farmer.kgs_issued or "N/A",
+            "Kgs Harvested (Clean)": farmer.kgs_harvested_clean or "N/A",
+            "Kgs Harvested (Husk)": farmer.kgs_harvested_husk or "N/A",
+            "Total Payment": (farmer.kgs_harvested_clean or 0) * 52 + (farmer.kgs_harvested_husk or 0) * 26,
+            "Amount Received": farmer.amount_received or "N/A",
+            "Last Harvest Date": farmer.last_harvest_date.strftime("%Y-%m-%d") if farmer.last_harvest_date else "N/A",
+            "Last Payment Date": farmer.last_payment_date.strftime("%Y-%m-%d") if farmer.last_payment_date else "N/A",
+            "Field Officer": farmer.field_officer,
+        })
+
+    # Convert the data into a pandas DataFrame.
+    df = pd.DataFrame(data)
+
+    # Write the DataFrame to an Excel file in memory.
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Detailed Farmers')
+    output.seek(0)
+
+    # Return the Excel file as an attachment.
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="detailed_farmers.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
