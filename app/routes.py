@@ -700,7 +700,9 @@ def record_harvest():
     return render_template('harvest.html')
 
 
-# Route to fetch farmer details (search using unique_number or phone_number)
+# Remove duplicate definitions. Use each route only once.
+
+# Route to fetch farmer details for non-AJAX use (renders a template)
 @main_bp.route('/fetch_farmer_details', methods=['POST'])
 def fetch_farmer_details():
     search_term = request.form.get('search_term')
@@ -720,6 +722,55 @@ def fetch_farmer_details():
     else:
         flash("No farmer found with the provided details.", "warning")
         return redirect(url_for('main.record_harvest'))
+
+# JSON Endpoint to fetch farmer details for AJAX use
+@main_bp.route('/fetch_farmer_json', methods=['GET'])
+def fetch_farmer_json():
+    unique_number = request.args.get('unique_number')
+    farmer = Farmer.query.filter_by(unique_number=unique_number).first()
+    if farmer:
+        return jsonify({
+            'success': True,
+            'farmer': {
+                'unique_number': farmer.unique_number,
+                'full_name': farmer.full_name,
+                'county': farmer.county,
+                'subcounty': farmer.subcounty,
+                'ward': farmer.ward,
+                'land_size': farmer.land_size,
+                'village': farmer.village,
+                'phone_number': farmer.phone_number,
+                'field_officer': farmer.field_officer
+            }
+        })
+    else:
+        return jsonify({'success': False, 'error': 'Farmer not found'}), 404
+
+# New route to update (edit) farmer details via AJAX
+@main_bp.route('/edit_farmer', methods=['POST'])
+def edit_farmer():
+    unique_number = request.form.get('unique_number')
+    farmer = Farmer.query.filter_by(unique_number=unique_number).first()
+    if not farmer:
+        return jsonify({'success': False, 'error': 'Farmer not found'}), 404
+
+    # Update farmer details from the form data
+    farmer.full_name = request.form.get('full_name')
+    farmer.county = request.form.get('county')
+    farmer.subcounty = request.form.get('subcounty')
+    farmer.ward = request.form.get('ward')
+    farmer.land_size = request.form.get('land_size')
+    farmer.village = request.form.get('village')
+    farmer.phone_number = request.form.get('phone_number')
+    farmer.field_officer = request.form.get('field_officer')
+    # Add any additional fields here as needed
+
+    try:
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Farmer details updated successfully!'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Update failed, please try again.'})
 
 
 @main_bp.route('/payment', methods=['GET', 'POST'])
@@ -819,6 +870,24 @@ def farmers():
     receipt = session.pop('receipt', None)
     return render_template('farmers.html', farmers=farmers_list, receipt=receipt)
 
+@main_bp.route('/bulk_edit_farmers', methods=['POST'])
+def bulk_edit_farmers():
+    data = request.get_json()
+    ids = data.get('ids')
+    new_field_officer = data.get('field_officer')
+    if not ids or not new_field_officer:
+        return jsonify({'success': False, 'error': 'Missing data.'}), 400
+    try:
+        farmers = Farmer.query.filter(Farmer.unique_number.in_(ids)).all()
+        if not farmers:
+            return jsonify({'success': False, 'error': 'No matching farmers found.'}), 404
+        for farmer in farmers:
+            farmer.field_officer = new_field_officer
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Selected farmers updated successfully.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Update failed: ' + str(e)}), 500
 
 @main_bp.route('/add_user', methods=['GET', 'POST'])
 @login_required
@@ -894,6 +963,23 @@ def manage_users():
         print(f"Error managing users: {e}")
         flash("An error occurred while managing users.", "danger")
         return redirect(url_for("main.dashboard"))  # Redirect on error
+
+
+@main_bp.route('/farmers_page', methods=['GET'])
+def farmers_page():
+    # Get the page number from query parameters; default is 1
+    page = request.args.get('page', 1, type=int)
+    per_page = 25  # Adjust as needed
+
+    # Build the pagination object
+    pagination = Farmer.query.order_by(Farmer.id).paginate(page=page, per_page=per_page, error_out=False)
+    farmers = pagination.items
+
+    # Note: Also pass receipt if it exists.
+    receipt = ... # your receipt, if applicable
+
+    return render_template('farmers.html', farmers=farmers, pagination=pagination, receipt=receipt)
+
 
 @main_bp.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 def edit_user(user_id):
@@ -1339,6 +1425,26 @@ def data_analysis():
                            field_officer_stats=field_officer_stats
                            )
 
+@main_bp.route('/payment_receipt', methods=['GET'])
+def payment_receipt():
+    # Retrieve the receipt as needed.
+    receipt = ...  # Your logic to get the receipt.
+    return render_template('payment_receipt.html', receipt=receipt)
+@main_bp.route('/farmers_quick_summary', methods=['GET'])
+def farmers_quick_summary():
+    # Optionally use pagination if you expect many records; here we assume a quick summary only loads a subset.
+    page = request.args.get('page', 1, type=int)
+    per_page = 1000
+    pagination = Farmer.query.order_by(Farmer.id).paginate(page=page, per_page=per_page, error_out=False)
+    farmers = pagination.items
+    return render_template('farmers_quick_summary.html', farmers=farmers, pagination=pagination)
+@main_bp.route('/farmers_detailed', methods=['GET'])
+def farmers_detailed():
+    page = request.args.get('page', 1, type=int)
+    per_page = 25  # Adjust per your needs.
+    pagination = Farmer.query.order_by(Farmer.id).paginate(page=page, per_page=per_page, error_out=False)
+    farmers_list = pagination.items
+    return render_template('farmers_detailed.html', farmers=farmers_list, pagination=pagination)
 
 if __name__ == '__main__':
     app.run(debug=True)

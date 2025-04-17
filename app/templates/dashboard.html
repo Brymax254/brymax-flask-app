@@ -52,7 +52,9 @@
         <h6 class="card-title text-success fw-bold mb-2">
           <i class="bi bi-bell-fill me-2"></i>Latest Update
         </h6>
-        <p class="card-text small mb-0 text-muted">{{ latest_update.content if latest_update else "No updates available." }}</p>
+        <p class="card-text small mb-0 text-muted">
+          {{ latest_update.content if latest_update else "No updates available." }}
+        </p>
       </div>
     </div>
     <div class="card sidebar-card shadow-lg rounded-3 mb-4">
@@ -60,8 +62,12 @@
         <h6 class="card-title text-info fw-bold mb-2">
           <i class="bi bi-megaphone-fill me-2"></i>Announcements
         </h6>
-        <p class="card-text small mb-2 text-muted">{{ memo.content if memo else "No memos available." }}</p>
-        <p class="card-text small mb-0 text-muted">{{ advertisement.content if advertisement else "No advertisements available." }}</p>
+        <p class="card-text small mb-2 text-muted">
+          {{ memo.content if memo else "No memos available." }}
+        </p>
+        <p class="card-text small mb-0 text-muted">
+          {{ advertisement.content if advertisement else "No advertisements available." }}
+        </p>
       </div>
     </div>
   </div>
@@ -69,43 +75,49 @@
   <!-- Main Content Column -->
   <div class="col-lg-9 col-xl-10">
     <div class="row g-4">
-      <!-- Main Card Grid -->
-      {% for card in [
-      {'title': 'Visualize Data', 'description': 'Generate analytical visuals.', 'icon': 'bi-bar-chart-line', 'url': url_for('main.visualize'), 'color': 'primary'},
-      {'title': 'Register Farmers', 'description': 'Add new farmer registrations.', 'icon': 'bi-pencil-square', 'url': url_for('main.register_farmer'), 'color': 'info'},
-      {'title': 'Payment', 'description': 'Process transactions.', 'icon': 'bi-credit-card', 'url': url_for('main.payment'), 'color': 'warning'},
-      {'title': 'Enter Daily Report', 'description': 'Track today’s performance metrics.', 'icon': 'bi-file-earmark-text', 'url': url_for('main.daily_report'), 'color': 'orange'},
-      {'title': 'Payroll', 'description': 'Manage payroll operations.', 'icon': 'bi-cash-stack', 'url': url_for('main.payroll'), 'color': 'success'},
-      {'title': 'Manage Plough', 'description': 'Track plough operations.', 'icon': 'bi-wrench', 'url': url_for('main.plough_default'), 'color': 'secondary'},
-      {'title': 'Profile', 'description': 'View your profile.', 'icon': 'bi-person-circle', 'url': url_for('main.profile'), 'color': 'dark'},
-      {'title': 'View PDF', 'description': 'Display PDF documents.', 'icon': 'bi-file-earmark-pdf', 'url': url_for('main.view_pdf'), 'color': 'danger'},
-      {'title': 'View Reports', 'description': 'Analyze detailed reports.', 'icon': 'bi-file-earmark-bar-graph', 'url': url_for('main.view_reports'), 'color': 'primary'},
-      {'title': 'Farmers', 'description': 'Manage registered farmers.', 'icon': 'bi-people', 'url': url_for('main.farmers'), 'color': 'teal'},
-      {'title': 'Issue Manure', 'description': 'Manage manure distribution for sustainable soil health.', 'icon': 'bi-basket3', 'url': url_for('main.issue_manure'), 'color': 'dark'},
-      {'title': 'Harvest Management', 'description': 'Keep track of harvested crops and ensure efficient management.', 'icon': 'bi-tree', 'url': url_for('main.record_harvest'), 'color': 'success'},
-      {'title': 'Google Sheets Visualize', 'description': 'Display visuals from Google Sheets.', 'icon': 'bi-table', 'url': url_for('main.google_sheets_visualize'), 'color': 'purple'},
-      {'title': 'Farmer Data Analysis', 'description': 'Analyze and visualize farmer insights.', 'icon': 'bi-graph-up-arrow', 'url': url_for('main.data_analysis'), 'color': 'blue'}
-    ] %}
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="card custom-card shadow-lg animate__animated animate__fadeIn" style="animation-delay: {{ loop.index * 0.2 }}s;">
-          <div class="card-body text-center">
-            <div class="icon-wrapper">
-              <div class="icon">
-                <i class="bi {{ card.icon }}"></i>
+      {# Define the cards array without inline comments inside the literal #}
+      {% set cards = [
+        {'title': 'Visualize Data', 'description': 'Generate analytical visuals.', 'icon': 'bi-bar-chart-line', 'url': url_for('main.visualize'), 'color': 'primary'},
+        {'title': 'Register Farmers', 'description': 'Add new farmer registrations.', 'icon': 'bi-pencil-square', 'url': url_for('main.register_farmer'), 'color': 'info'},
+        {'title': 'Payment', 'description': 'Process transactions.', 'icon': 'bi-credit-card', 'url': url_for('main.payment'), 'color': 'warning'},
+        {'title': 'Enter Daily Report', 'description': 'Track today’s performance metrics.', 'icon': 'bi-file-earmark-text', 'url': url_for('main.daily_report'), 'color': 'orange'},
+        {'title': 'Payroll', 'description': 'Manage payroll operations.', 'icon': 'bi-cash-stack', 'url': url_for('main.payroll'), 'color': 'success'},
+        {'title': 'Manage Plough', 'description': 'Track plough operations.', 'icon': 'bi-wrench', 'url': url_for('main.plough_default'), 'color': 'secondary'},
+        {'title': 'Profile', 'description': 'View your profile.', 'icon': 'bi-person-circle', 'url': url_for('main.profile'), 'color': 'dark'},
+        {'title': 'View PDF', 'description': 'Display PDF documents.', 'icon': 'bi-file-earmark-pdf', 'url': url_for('main.view_pdf'), 'color': 'danger'},
+        {'title': 'View Reports', 'description': 'Analyze detailed reports.', 'icon': 'bi-file-earmark-bar-graph', 'url': url_for('main.view_reports'), 'color': 'primary'},
+        {'title': 'Farmers', 'description': 'Manage registered farmers.', 'icon': 'bi-people', 'url': url_for('main.farmers'), 'color': 'teal'},
+        {'title': 'Issue Manure', 'description': 'Manage manure distribution for sustainable soil health.', 'icon': 'bi-basket3', 'url': url_for('main.issue_manure'), 'color': 'dark'},
+        {'title': 'Harvest Management', 'description': 'Keep track of harvested crops and ensure efficient management.', 'icon': 'bi-tree', 'url': url_for('main.record_harvest'), 'color': 'success'},
+        {'title': 'Google Sheets Visualize', 'description': 'Display visuals from Google Sheets.', 'icon': 'bi-table', 'url': url_for('main.google_sheets_visualize'), 'color': 'purple'},
+        {'title': 'Farmer Data Analysis', 'description': 'Analyze and visualize farmer insights.', 'icon': 'bi-graph-up-arrow', 'url': url_for('main.data_analysis'), 'color': 'blue'},
+        {'title': 'Payment Receipt', 'description': 'View your payment receipts.', 'icon': 'bi-receipt', 'url': url_for('main.payment_receipt'), 'color': 'primary'},
+        {'title': 'Farmers Quick Summary', 'description': 'Quick overview of farmer data for bulk actions.', 'icon': 'bi-speedometer2', 'url': url_for('main.farmers_quick_summary'), 'color': 'success'},
+        {'title': 'Detailed Farmers', 'description': 'Detailed view with pagination for every record.', 'icon': 'bi-file-earmark-text', 'url': url_for('main.farmers_detailed'), 'color': 'info'}
+      ] %}
+      {% for card in cards %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div class="card custom-card shadow-lg animate__animated animate__fadeIn" style="animation-delay: {{ loop.index * 0.2 }}s;">
+            <div class="card-body text-center">
+              <div class="icon-wrapper mb-3">
+                <div class="icon bg-light rounded-circle d-inline-flex align-items-center justify-content-center p-3">
+                  <i class="bi {{ card.icon }} fs-2 text-{{ card.color }}"></i>
+                </div>
               </div>
+              <h6 class="card-title text-uppercase fw-bold mt-2">{{ card.title }}</h6>
+              <p class="card-text small text-muted">{{ card.description }}</p>
+              <a href="{{ card.url }}" class="btn btn-{{ card.color }} btn-sm w-100 text-uppercase shadow-sm">
+                Explore
+              </a>
             </div>
-            <h6 class="card-title mt-3">{{ card.title }}</h6>
-            <p class="card-text text-muted small">{{ card.description }}</p>
-            <a href="{{ card.url }}" class="btn w-100 fw-bold btn-{{ card.color }}">Explore</a>
           </div>
         </div>
-      </div>
       {% endfor %}
     </div>
   </div>
 </div>
 
-   <div id="uploaded-documents" class="container mt-5">
+<div id="uploaded-documents" class="container mt-5">
   <h2 class="mb-4 text-center text-primary fw-bold">Uploaded Documents</h2>
   <div class="row g-4">
     {% if files %}
@@ -205,6 +217,4 @@
     </div>
   </div>
 </div>
-
-
 {% endblock %}

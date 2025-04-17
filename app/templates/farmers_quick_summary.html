@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0 text-uppercase">Farmers Quick Summary</h2>
+    <div>
+      <!-- Export button uses correct endpoint -->
+      <button class="btn btn-outline-primary btn-sm me-2" id="exportQuick">
+        <i class="bi bi-download"></i> Export Quick Summary
+      </button>
+      <button class="btn btn-outline-success btn-sm me-2" id="bulkEditSelected">
+        <i class="bi bi-pencil-square"></i> Bulk Edit Selected
+      </button>
+      <button class="btn btn-outline-danger btn-sm" id="deleteSelectedQuick">
+        <i class="bi bi-trash"></i> Delete Selected
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive mb-5">
+    <table class="table table-sm table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th scope="col"><input type="checkbox" id="selectAllQuick"></th>
+          <th scope="col">Farmer Name</th>
+          <th scope="col">County</th>
+          <th scope="col">Subcounty</th>
+          <th scope="col">Ward</th>
+          <th scope="col">Acres</th>
+          <th scope="col">Village</th>
+          <th scope="col">Phone Number</th>
+          <th scope="col">Field Officer</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for farmer in farmers %}
+        <tr>
+          <td><input type="checkbox" class="selectFarmerQuick" data-id="{{ farmer.unique_number }}"></td>
+          <td>{{ farmer.full_name }}</td>
+          <td>{{ farmer.county }}</td>
+          <td>{{ farmer.subcounty }}</td>
+          <td>{{ farmer.ward }}</td>
+          <td>{{ farmer.land_size }}</td>
+          <td>{{ farmer.village }}</td>
+          <td>{{ farmer.phone_number }}</td>
+          <td>{{ farmer.field_officer }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm me-2" onclick="editFarmer('{{ farmer.unique_number }}')">
+              <i class="bi bi-pencil-square"></i> Edit
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSingleFarmer('{{ farmer.unique_number }}')">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- JavaScript Section (requires SweetAlert2 to be loaded) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  // Export Quick Summary: redirect using correct export endpoint
+  document.getElementById("exportQuick").addEventListener("click", function() {
+    window.location.href = "{{ url_for('main.export_quick_summary_excel') }}";
+  });
+
+  // Select/Deselect all checkboxes
+  document.getElementById("selectAllQuick").addEventListener("change", function() {
+    let checkboxes = document.querySelectorAll(".selectFarmerQuick");
+    checkboxes.forEach(cb => {
+      cb.checked = this.checked;
+    });
+  });
+
+  // Bulk Edit Selected: prompt the user for a new Field Officer and send AJAX request.
+  document.getElementById("bulkEditSelected").addEventListener("click", function() {
+    let selected = Array.from(document.querySelectorAll(".selectFarmerQuick:checked"))
+                        .map(cb => cb.dataset.id);
+    if (selected.length === 0) {
+      Swal.fire("No selection", "Please select at least one farmer.", "warning");
+      return;
+    }
+    Swal.fire({
+      title: "Bulk Edit Field Officer",
+      input: "select",
+      inputOptions: {
+        "Caroline Wanjiku": "Caroline Wanjiku",
+        "Ian Jeff Gathura": "Ian Jeff Gathura",
+        "Ann Wachira": "Ann Wachira",
+        "John Irungu": "John Irungu",
+        "Eva": "Eva"
+      },
+      inputPlaceholder: "Select new Field Officer",
+      showCancelButton: true
+    }).then(result => {
+      if (result.value) {
+        fetch("{{ url_for('main.bulk_edit_farmers') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify({
+            ids: selected,
+            field_officer: result.value
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire("Success", data.message, "success").then(() => location.reload());
+          } else {
+            Swal.fire("Error", data.error || "Bulk edit failed", "error");
+          }
+        })
+        .catch(error => {
+          console.error("Bulk edit error:", error);
+          Swal.fire("Error", "An error occurred during bulk edit.", "error");
+        });
+      }
+    });
+  });
+
+  // Delete Selected Quick: confirm deletion then send AJAX request.
+  document.getElementById("deleteSelectedQuick").addEventListener("click", function() {
+    let selected = Array.from(document.querySelectorAll(".selectFarmerQuick:checked"))
+                        .map(cb => cb.dataset.id);
+    if (selected.length === 0) {
+      Swal.fire("No selection", "Please select at least one farmer to delete.", "warning");
+      return;
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to recover the deleted farmers!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete them!",
+      cancelButtonText: "Cancel"
+    }).then(result => {
+      if (result.isConfirmed) {
+        fetch("{{ url_for('main.delete_farmers') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify({ ids: selected })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire("Deleted!", data.message, "success").then(() => location.reload());
+          } else {
+            Swal.fire("Error", data.error || "Deletion failed", "error");
+          }
+        })
+        .catch(error => {
+          console.error("Deletion error:", error);
+          Swal.fire("Error", "An error occurred while deleting.", "error");
+        });
+      }
+    });
+  });
+
+  // Single Edit: redirect to edit page with query parameter.
+  window.editFarmer = function(uniqueNumber) {
+    window.location.href = "{{ url_for('main.edit_farmer') }}?unique_number=" + encodeURIComponent(uniqueNumber);
+  };
+
+  // Single Delete: confirm deletion then send AJAX request.
+  window.deleteSingleFarmer = function(uniqueNumber) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This will permanently delete the farmer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel"
+    }).then(result => {
+      if (result.isConfirmed) {
+        fetch("{{ url_for('main.delete_farmers') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify({ id: uniqueNumber })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire("Deleted!", data.message, "success").then(() => location.reload());
+          } else {
+            Swal.fire("Error", data.error || "Deletion failed", "error");
+          }
+        })
+        .catch(error => {
+          console.error("Single delete error:", error);
+          Swal.fire("Error", "An error occurred while deleting.", "error");
+        });
+      }
+    });
+  };
+});
+</script>
+{% endblock %}
