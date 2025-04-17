@@ -1289,5 +1289,56 @@ def export_farmers_excel():
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
+
+@main_bp.route('/data_analysis')
+def data_analysis():
+    farmers = Farmer.query.all()
+    total_farmers = len(farmers)
+    average_land_size = sum(f.land_size for f in farmers if f.land_size) / total_farmers if total_farmers else 0
+    unique_field_officers = len(set(f.field_officer for f in farmers if f.field_officer))
+
+    # Create statistics per field officer
+    fe_stats = {}
+    for f in farmers:
+        if f.field_officer:
+            if f.field_officer not in fe_stats:
+                fe_stats[f.field_officer] = {'total_farmers': 0, 'total_acres': 0}
+            fe_stats[f.field_officer]['total_farmers'] += 1
+            fe_stats[f.field_officer]['total_acres'] += f.land_size
+
+    field_officer_stats = [
+        {'field_officer': key, 'total_farmers': value['total_farmers'], 'total_acres': value['total_acres']} for
+        key, value in fe_stats.items()]
+
+    # Prepare chart data for counties, seasons, and land sizes (existing code) ...
+    counties = {}
+    seasons = {"OND": 0, "MAM": 0}
+    land_sizes = []
+    for farmer in farmers:
+        counties[farmer.county] = counties.get(farmer.county, 0) + 1
+        if farmer.season in seasons:
+            seasons[farmer.season] += 1
+        land_sizes.append(farmer.land_size)
+    counties_labels = list(counties.keys())
+    counties_values = list(counties.values())
+    seasons_labels = list(seasons.keys())
+    seasons_values = list(seasons.values())
+    land_size_labels = sorted(set(land_sizes))
+    land_size_values = [land_sizes.count(size) for size in land_size_labels]
+
+    return render_template("data_analysis.html",
+                           total_farmers=total_farmers,
+                           average_land_size=average_land_size,
+                           unique_field_officers=unique_field_officers,
+                           counties_labels=counties_labels,
+                           counties_values=counties_values,
+                           seasons_labels=seasons_labels,
+                           seasons_values=seasons_values,
+                           land_size_labels=land_size_labels,
+                           land_size_values=land_size_values,
+                           field_officer_stats=field_officer_stats
+                           )
+
+
 if __name__ == '__main__':
     app.run(debug=True)

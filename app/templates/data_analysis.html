@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+  <!-- Page Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <div class="text-center">
+        <h1 class="display-4 fw-bold text-primary">Farmer Data Analysis Dashboard</h1>
+        <p class="lead text-muted">Insightful analytics from our registered farmer data</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overview Statistics Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="card shadow border-0">
+        <div class="card-body text-center">
+          <h2 class="display-5 fw-bold text-success">{{ total_farmers }}</h2>
+          <p class="mb-0">Total Farmers Registered</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow border-0">
+        <div class="card-body text-center">
+          <h2 class="display-5 fw-bold text-info">{{ average_land_size|round(2) }}</h2>
+          <p class="mb-0">Average Land Size (acres)</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow border-0">
+        <div class="card-body text-center">
+          <h2 class="display-5 fw-bold text-warning">{{ unique_field_officers }}</h2>
+          <p class="mb-0">Active Field Officers</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row g-4 mb-5">
+    <!-- Farmers per County (Bar Chart) -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-gradient-primary text-white">
+          <h5 class="card-title mb-0">Farmers per County</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="countyChart" style="min-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Season Distribution (Pie Chart) -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-gradient-danger text-white">
+          <h5 class="card-title mb-0">Season Distribution</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="seasonChart" style="min-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <!-- Land Size Distribution (Line Chart) -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-gradient-info text-white">
+          <h5 class="card-title mb-0">Land Size Distribution</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="landSizeChart" style="min-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Field Officer Performance (Radar Chart) -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-gradient-success text-white">
+          <h5 class="card-title mb-0">Field Officer Performance</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="fieldOfficerRadarChart" style="min-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Field Officer Summary Table -->
+  <div class="row mb-5">
+    <div class="col">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white">
+          <h5 class="card-title mb-0">Field Officer Performance Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>Field Officer</th>
+                  <th>Total Farmers</th>
+                  <th>Total Acres</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for stat in field_officer_stats %}
+                <tr>
+                  <td>{{ stat.field_officer }}</td>
+                  <td>{{ stat.total_farmers }}</td>
+                  <td>{{ stat.total_acres | round(2) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Visualizations Section -->
+  <div class="row g-4 mb-5">
+    <!-- Season Breakdown (Doughnut Chart) -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-gradient-secondary text-white">
+          <h5 class="card-title mb-0">Season Breakdown (Doughnut)</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="seasonDoughnutChart" style="min-height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Advanced Metrics Diagram (Placeholder) -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-gradient-warning text-white">
+          <h5 class="card-title mb-0">Advanced Metrics Diagram</h5>
+        </div>
+        <div class="card-body text-center">
+          <p class="text-muted mb-0">Coming Soon...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include Chart.js CDN (if not already in your base template) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart.js Configuration -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Farmers per County (Bar Chart)
+  const countyCtx = document.getElementById("countyChart").getContext("2d");
+  new Chart(countyCtx, {
+    type: "bar",
+    data: {
+      labels: {{ counties_labels | tojson }},
+      datasets: [{
+        label: "Farmers per County",
+        data: {{ counties_values | tojson }},
+        backgroundColor: "rgba(54, 162, 235, 0.7)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  // Season Distribution (Pie Chart)
+  const seasonCtx = document.getElementById("seasonChart").getContext("2d");
+  new Chart(seasonCtx, {
+    type: "pie",
+    data: {
+      labels: {{ seasons_labels | tojson }},
+      datasets: [{
+        data: {{ seasons_values | tojson }},
+        backgroundColor: ["#FF6384", "#36A2EB"],
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  // Land Size Distribution (Line Chart)
+  const landSizeCtx = document.getElementById("landSizeChart").getContext("2d");
+  new Chart(landSizeCtx, {
+    type: "line",
+    data: {
+      labels: {{ land_size_labels | tojson }},
+      datasets: [{
+        label: "Land Size Distribution",
+        data: {{ land_size_values | tojson }},
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 2,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  // Field Officer Performance (Radar Chart)
+  const fieldOfficerCtx = document.getElementById("fieldOfficerRadarChart").getContext("2d");
+  const fieldOfficerLabels = {{ field_officer_stats | map(attribute='field_officer') | list | tojson }};
+  const fieldOfficerFarmerCounts = {{ field_officer_stats | map(attribute='total_farmers') | list | tojson }};
+  const fieldOfficerAcreSums = {{ field_officer_stats | map(attribute='total_acres') | list | tojson }};
+  new Chart(fieldOfficerCtx, {
+    type: "radar",
+    data: {
+      labels: fieldOfficerLabels,
+      datasets: [{
+        label: "Farmers Registered",
+        data: fieldOfficerFarmerCounts,
+        backgroundColor: "rgba(255, 99, 132, 0.4)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1
+      },
+      {
+        label: "Total Acres",
+        data: fieldOfficerAcreSums,
+        backgroundColor: "rgba(54, 162, 235, 0.4)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: { r: { beginAtZero: true } }
+    }
+  });
+
+  // Season Distribution (Doughnut Chart)
+  const doughnutCtx = document.getElementById("seasonDoughnutChart").getContext("2d");
+  new Chart(doughnutCtx, {
+    type: "doughnut",
+    data: {
+      labels: {{ seasons_labels | tojson }},
+      datasets: [{
+        data: {{ seasons_values | tojson }},
+        backgroundColor: ["#FF6384", "#36A2EB"],
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+});
+</script>
+{% endblock %}
