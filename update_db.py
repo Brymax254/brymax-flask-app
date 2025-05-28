@@ -1,67 +1,50 @@
 import os
-from sqlalchemy import create_engine, text
-from sqlalchemy.exc import SQLAlchemyError
+import subprocess
+import sys
 from flask import Flask
-from flask_migrate import Migrate, upgrade, migrate
-from app import db  # Import your actual db instance
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
-# Use local SQLite database URI by default.
-DATABASE_URI = os.getenv(
-    "DATABASE_URI",
-    "sqlite:///D:/BRYMAX/BRYMAX OFFICIAL DATA MANAGEMENT SYSTEM2/brymax.db"
-)
-
-# Initialize Flask app
+# Flask app setup
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize db and migration
-db.init_app(app)
-migrate_obj = Migrate(app, db)
+# Use environment variable for database connection
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://brymax_zra0_user:nD2AY6N2igHVYTEMYxQZszKuSDYyvCi6@dpg-d0rg54buibrs73d7881g-a.oregon-postgres.render.com/brymax_zra0?sslmode=require"
+)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Initialize extensions
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
-def check_and_create_updates_table():
+def run_command(command):
+    """Runs a shell command and exits if it fails."""
+    print(f"Running: {' '.join(command)}")
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("Error:", result.stderr)
+        sys.exit(result.returncode)
+    print(result.stdout)
+
+
+def update_database():
+    """Applies migrations and upgrades the database."""
+
+    # Ensure the correct app context
     with app.app_context():
-        engine = create_engine(DATABASE_URI)
-        with engine.connect() as connection:
-            try:
-                print("Checking 'updates' table...")
+        print("Checking for pending migrations...")
 
-                # SQLite uses the 'sqlite_master' table to store schema info.
-                # This query checks if the 'updates' table exists.
-                result = connection.execute(text(
-                    "SELECT name FROM sqlite_master WHERE type='table' AND name='updates';"
-                ))
-                table_exists = result.fetchone() is not None
+        # Generate new migration script (if changes exist)
+        run_command(["flask", "db", "migrate", "-m", "Auto database update"])
 
-                if not table_exists:
-                    print("Creating 'updates' table...")
-                    connection.execute(text("""
-                        CREATE TABLE updates (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            data TEXT NOT NULL
-                        );
-                    """))
-                else:
-                    print("'updates' table already exists.")
+        # Apply migrations
+        run_command(["flask", "db", "upgrade"])
 
-                print("Table check complete.")
-            except SQLAlchemyError as e:
-                print(f"Error checking or creating 'updates' table: {e}")
-
-
-def run_migrations():
-    with app.app_context():
-        try:
-            print("Running migrations...")
-            migrate()  # Create a new migration script if needed.
-            upgrade()  # Apply the migration.
-            print("Migrations applied successfully.")
-        except Exception as e:
-            print(f"Error applying migrations: {e}")
+        print("Database successfully updated!")
 
 
 if __name__ == "__main__":
-    check_and_create_updates_table()
-    run_migrations()
+    update_database()
