@@ -12,33 +12,42 @@
     </div>
   </div>
 
-  <!-- Overview Statistics Cards -->
-  <div class="row g-4 mb-5">
-    <div class="col-md-4">
-      <div class="card shadow border-0">
-        <div class="card-body text-center">
-          <h2 class="display-5 fw-bold text-success">{{ total_farmers }}</h2>
-          <p class="mb-0">Total Farmers Registered</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card shadow border-0">
-        <div class="card-body text-center">
-          <h2 class="display-5 fw-bold text-info">{{ average_land_size|round(2) }}</h2>
-          <p class="mb-0">Average Land Size (acres)</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card shadow border-0">
-        <div class="card-body text-center">
-          <h2 class="display-5 fw-bold text-warning">{{ unique_field_officers }}</h2>
-          <p class="mb-0">Active Field Officers</p>
-        </div>
+<!-- Overview Statistics Cards -->
+<div class="row g-4 mb-5">
+  <div class="col-md-3">
+    <div class="card shadow border-0">
+      <div class="card-body text-center">
+        <h2 class="display-5 fw-bold text-success">{{ total_farmers }}</h2>
+        <p class="mb-0">Total Farmers Registered</p>
       </div>
     </div>
   </div>
+  <div class="col-md-3">
+    <div class="card shadow border-0">
+      <div class="card-body text-center">
+        <h2 class="display-5 fw-bold text-info">{{ average_land_size | round(2) }}</h2>
+        <p class="mb-0">Average Land Size (acres)</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow border-0">
+      <div class="card-body text-center">
+        <h2 class="display-5 fw-bold text-warning">{{ unique_field_officers }}</h2>
+        <p class="mb-0">Active Field Officers</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow border-0">
+      <div class="card-body text-center">
+        <h2 class="display-5 fw-bold text-danger">{{ total_acres | default(0) | round(2) }}</h2>
+
+        <p class="mb-0">Total Acres</p>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Charts Section -->
   <div class="row g-4 mb-5">

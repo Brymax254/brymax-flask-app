@@ -1378,10 +1378,21 @@ def export_farmers_excel():
 
 @main_bp.route('/data_analysis')
 def data_analysis():
+    # Retrieve all farmers
     farmers = Farmer.query.all()
     total_farmers = len(farmers)
-    average_land_size = sum(f.land_size for f in farmers if f.land_size) / total_farmers if total_farmers else 0
+
+    # Calculate average land size (if there are any farmers)
+    average_land_size = (
+        sum(f.land_size for f in farmers if f.land_size) / total_farmers
+        if total_farmers else 0
+    )
+
+    # Count unique field officers
     unique_field_officers = len(set(f.field_officer for f in farmers if f.field_officer))
+
+    # Calculate total acres across all farmers. If no land_size is provided, this defaults to 0.
+    total_acres = sum(f.land_size for f in farmers if f.land_size)
 
     # Create statistics per field officer
     fe_stats = {}
@@ -1393,10 +1404,11 @@ def data_analysis():
             fe_stats[f.field_officer]['total_acres'] += f.land_size
 
     field_officer_stats = [
-        {'field_officer': key, 'total_farmers': value['total_farmers'], 'total_acres': value['total_acres']} for
-        key, value in fe_stats.items()]
+        {'field_officer': key, 'total_farmers': value['total_farmers'], 'total_acres': value['total_acres']}
+        for key, value in fe_stats.items()
+    ]
 
-    # Prepare chart data for counties, seasons, and land sizes (existing code) ...
+    # Prepare chart data for counties, seasons, and land sizes
     counties = {}
     seasons = {"OND": 0, "MAM": 0}
     land_sizes = []
@@ -1412,18 +1424,20 @@ def data_analysis():
     land_size_labels = sorted(set(land_sizes))
     land_size_values = [land_sizes.count(size) for size in land_size_labels]
 
+    # Pass all computed statistics to the template
     return render_template("data_analysis.html",
                            total_farmers=total_farmers,
                            average_land_size=average_land_size,
                            unique_field_officers=unique_field_officers,
+                           total_acres=total_acres,  # New variable for total acres
                            counties_labels=counties_labels,
                            counties_values=counties_values,
                            seasons_labels=seasons_labels,
                            seasons_values=seasons_values,
                            land_size_labels=land_size_labels,
                            land_size_values=land_size_values,
-                           field_officer_stats=field_officer_stats
-                           )
+                           field_officer_stats=field_officer_stats)
+
 
 @main_bp.route('/payment_receipt', methods=['GET'])
 def payment_receipt():

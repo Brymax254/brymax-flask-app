@@ -3,10 +3,13 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Flask
 from flask_migrate import Migrate, upgrade, migrate
-from app import create_app, db # Replace with your actual db instance import
+from app import db  # Import your actual db instance
 
-# Replace with your actual database URI
-DATABASE_URI = os.getenv("DATABASE_URI", "postgresql://brymax_db_0rar_user:UJAUb5GwFatfUxd5CvxCCltSNEN5asAf@dpg-cvjh7a24d50c73eep780-a.oregon-postgres.render.com/brymax_db_0rar")
+# Use local SQLite database URI by default.
+DATABASE_URI = os.getenv(
+    "DATABASE_URI",
+    "sqlite:///D:/BRYMAX/BRYMAX OFFICIAL DATA MANAGEMENT SYSTEM2/brymax.db"
+)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -17,47 +20,47 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 migrate_obj = Migrate(app, db)
 
+
 def check_and_create_updates_table():
     with app.app_context():
         engine = create_engine(DATABASE_URI)
         with engine.connect() as connection:
             try:
-                print("Checking updates table and sequence...")
+                print("Checking 'updates' table...")
 
-                # Check if the 'updates' table exists
-                result = connection.execute(text("SELECT to_regclass('public.updates');"))
-                table_exists = result.scalar() is not None
-
-                # Check if the sequence exists
-                result = connection.execute(text("SELECT to_regclass('public.updates_id_seq');"))
-                sequence_exists = result.scalar() is not None
+                # SQLite uses the 'sqlite_master' table to store schema info.
+                # This query checks if the 'updates' table exists.
+                result = connection.execute(text(
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name='updates';"
+                ))
+                table_exists = result.fetchone() is not None
 
                 if not table_exists:
                     print("Creating 'updates' table...")
                     connection.execute(text("""
                         CREATE TABLE updates (
-                            id SERIAL PRIMARY KEY,
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
                             data TEXT NOT NULL
                         );
                     """))
+                else:
+                    print("'updates' table already exists.")
 
-                if not sequence_exists:
-                    print("Creating 'updates_id_seq' sequence...")
-                    connection.execute(text("CREATE SEQUENCE updates_id_seq;"))
-
-                print("Table and sequence check complete.")
+                print("Table check complete.")
             except SQLAlchemyError as e:
-                print(f"Error checking or creating updates table/sequence: {e}")
+                print(f"Error checking or creating 'updates' table: {e}")
+
 
 def run_migrations():
     with app.app_context():
         try:
             print("Running migrations...")
-            migrate()  # This creates a new migration script if needed
-            upgrade()  # This applies the migration
+            migrate()  # Create a new migration script if needed.
+            upgrade()  # Apply the migration.
             print("Migrations applied successfully.")
         except Exception as e:
             print(f"Error applying migrations: {e}")
+
 
 if __name__ == "__main__":
     check_and_create_updates_table()
